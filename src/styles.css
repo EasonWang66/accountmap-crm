@@ -392,13 +392,13 @@ button {
   position: relative;
   display: grid;
   justify-items: center;
-  width: 118px;
-  min-height: 62px;
+  width: 124px;
+  min-height: 72px;
   border: 1.5px solid #cdd4da;
   border-radius: 4px;
   background: #f8f8f8;
   color: #1f2937;
-  padding: 11px 8px 7px;
+  padding: 12px 8px 7px;
   box-shadow: 0 1px 1px rgb(0 0 0 / 5%);
   touch-action: none;
 }
@@ -427,19 +427,30 @@ button {
 .person-tags {
   position: absolute;
   top: -12px;
-  left: 0;
+  left: 50%;
   display: flex;
   gap: 2px;
+  transform: translateX(-50%);
 }
 
 .person-tags span {
-  min-width: 20px;
+  min-width: 36px;
   border-radius: 3px 3px 0 0;
   background: #176b91;
   color: white;
   font-size: 9px;
   font-weight: 800;
   line-height: 14px;
+  padding: 0 5px;
+  white-space: nowrap;
+}
+
+.person-tags span:nth-child(1) {
+  background: #176b91;
+}
+
+.person-tags span:nth-child(2) {
+  background: #0d3b52;
 }
 
 .person-title {
@@ -451,14 +462,22 @@ button {
 .person-node strong {
   margin-top: 2px;
   color: #202a33;
-  font-size: 11px;
+  font-size: 12px;
   line-height: 1.2;
+}
+
+.person-location {
+  margin-top: 2px;
+  color: #2f3d48;
+  font-size: 9px;
+  font-weight: 700;
+  line-height: 1.1;
 }
 
 .person-actions {
   display: flex;
   gap: 10px;
-  margin-top: 6px;
+  margin-top: 5px;
   color: #111827;
 }
 

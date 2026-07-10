@@ -22,7 +22,7 @@ export const contacts: Contact[] = [
     title: "Chief Executive Officer",
     department: "Executive",
     location: "Atlanta, GA",
-    relationshipTags: ["10", "FTE"],
+    relationshipTags: ["1 C", "2 FTE"],
     cardVariant: "blue"
   },
   {
@@ -32,7 +32,7 @@ export const contacts: Contact[] = [
     title: "Chief Operating Officer",
     department: "Operations",
     location: "Atlanta, GA",
-    relationshipTags: ["12", "SFTE"],
+    relationshipTags: ["3 C", "9 FTE"],
     cardVariant: "blue"
   },
   {
@@ -42,7 +42,7 @@ export const contacts: Contact[] = [
     title: "Chief Financial Officer",
     department: "Finance",
     location: "Atlanta, GA",
-    relationshipTags: ["8", "FTE", "21"],
+    relationshipTags: ["12 C", "2 FTE"],
     cardVariant: "blue"
   },
   {
@@ -82,7 +82,7 @@ export const contacts: Contact[] = [
     title: "VP of Finance",
     department: "Finance",
     location: "Atlanta, GA",
-    relationshipTags: ["15"],
+    relationshipTags: ["4 C", "7 FTE"],
     cardVariant: "blue"
   },
   {
@@ -92,7 +92,7 @@ export const contacts: Contact[] = [
     title: "VP of Technology",
     department: "Technology",
     location: "Atlanta, GA",
-    relationshipTags: ["6", "PT"],
+    relationshipTags: ["8 C", "5 FTE"],
     cardVariant: "blue"
   },
   {
@@ -102,7 +102,7 @@ export const contacts: Contact[] = [
     title: "Chief Operations Officer",
     department: "Operations",
     location: "Atlanta, GA",
-    relationshipTags: ["9", "FTE"],
+    relationshipTags: ["2 C", "11 FTE"],
     cardVariant: "blue"
   },
   {
@@ -122,7 +122,7 @@ export const contacts: Contact[] = [
     title: "Sales Manager",
     department: "Sales",
     location: "Atlanta, GA",
-    relationshipTags: ["22", "FTE"],
+    relationshipTags: ["6 C", "4 FTE"],
     cardVariant: "blue"
   },
   {
@@ -132,7 +132,7 @@ export const contacts: Contact[] = [
     title: "Software Engineer",
     department: "Technology",
     location: "Atlanta, GA",
-    relationshipTags: ["4", "FTE"],
+    relationshipTags: ["9 C", "3 FTE"],
     cardVariant: "blue"
   },
   {

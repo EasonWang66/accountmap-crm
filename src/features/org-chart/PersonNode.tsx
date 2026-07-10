@@ -37,6 +37,7 @@ export function PersonNode({ data }: NodeProps<PersonGraphNode>) {
       ) : null}
       <span className="person-title">{data.contact.title}</span>
       <strong>{data.contact.fullName}</strong>
+      <span className="person-location">{data.contact.location}</span>
       <div className="person-actions" aria-hidden="true">
         <Phone size={12} />
         <Mail size={12} />
