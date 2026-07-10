@@ -1,8 +1,10 @@
 import type { Account, ChartEdge, ChartNode, Contact } from "./types";
+import cocaColaLogo from "../assets/coca-cola-logo.webp";
 
 export const finovatechAccount: Account = {
   id: "acct-coca-cola",
   name: "Coca-Cola",
+  logoUrl: cocaColaLogo,
   industryTags: ["Beverage", "Consumer Goods"],
   description:
     "Coca-Cola is a global beverage company with a broad portfolio of sparkling drinks, hydration products, coffees, teas, and nutrition brands. The account workspace maps cross-functional stakeholders across marketing, finance, supply chain, and technology teams for enterprise relationship planning.",

@@ -1,6 +1,7 @@
 export type Account = {
   id: string;
   name: string;
+  logoUrl?: string;
   description: string;
   industryTags: string[];
   phone: string;
@@ -34,4 +35,3 @@ export type ChartEdge = {
   targetNodeId: string;
   relationshipType: "reports-to" | "influences" | "partner" | "stakeholder";
 };
-

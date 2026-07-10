@@ -12,14 +12,19 @@ export type PersonNodeData = {
 export type PersonGraphNode = Node<PersonNodeData, "person">;
 
 export function PersonNode({ data }: NodeProps<PersonGraphNode>) {
-  const selectedPersonId = useOrgChartStore((state) => state.selectedPersonId);
+  const hoveredPersonId = useOrgChartStore((state) => state.hoveredPersonId);
+  const setHoveredPerson = useOrgChartStore((state) => state.setHoveredPerson);
   const selectPerson = useOrgChartStore((state) => state.selectPerson);
-  const isSelected = selectedPersonId === data.contact.id;
+  const isActive = hoveredPersonId === data.contact.id;
 
   return (
     <button
-      className={`person-node ${data.matched ? "matched" : ""} ${isSelected ? "selected" : ""}`}
+      className={`person-node ${data.matched ? "matched" : ""} ${isActive ? "active" : ""}`}
+      onBlur={() => setHoveredPerson(undefined)}
       onClick={() => selectPerson(data.contact.id)}
+      onFocus={() => setHoveredPerson(data.contact.id)}
+      onMouseEnter={() => setHoveredPerson(data.contact.id)}
+      onMouseLeave={() => setHoveredPerson(undefined)}
       type="button"
     >
       <Handle className="node-handle" position={Position.Top} type="target" />

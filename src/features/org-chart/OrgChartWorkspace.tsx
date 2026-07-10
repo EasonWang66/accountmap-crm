@@ -13,13 +13,15 @@ export function OrgChartWorkspace() {
   const editMode = useOrgChartStore((state) => state.editMode);
   const query = useOrgChartStore((state) => state.query);
   const selectedPersonId = useOrgChartStore((state) => state.selectedPersonId);
+  const hoveredPersonId = useOrgChartStore((state) => state.hoveredPersonId);
   const draftName = useOrgChartStore((state) => state.draftName);
   const setEditMode = useOrgChartStore((state) => state.setEditMode);
   const setQuery = useOrgChartStore((state) => state.setQuery);
   const setDraftName = useOrgChartStore((state) => state.setDraftName);
 
   const normalizedQuery = query.trim().toLowerCase();
-  const selectedContact = contacts.find((contact) => contact.id === selectedPersonId);
+  const activePersonId = hoveredPersonId ?? selectedPersonId;
+  const selectedContact = contacts.find((contact) => contact.id === activePersonId);
 
   const nodes = useMemo<PersonGraphNode[]>(
     () =>

@@ -9,9 +9,7 @@ export function AccountHeader({ account }: AccountHeaderProps) {
   return (
     <section className="account-header" aria-label={`${account.name} account summary`}>
       <div className="logo-mark" aria-hidden="true">
-        <span />
-        <span />
-        <span />
+        {account.logoUrl ? <img alt="" src={account.logoUrl} /> : null}
       </div>
       <div className="account-copy">
         <h1>{account.name}</h1>
@@ -49,4 +47,3 @@ export function AccountHeader({ account }: AccountHeaderProps) {
     </section>
   );
 }
-
