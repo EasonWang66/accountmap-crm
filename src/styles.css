@@ -478,9 +478,16 @@ button {
   display: flex;
   align-items: center;
   justify-content: center;
-  gap: 14px;
+  gap: 13px;
   margin-top: 5px;
   color: #111827;
+}
+
+.person-actions svg {
+  display: block;
+  width: 11px;
+  height: 11px;
+  fill: currentColor;
 }
 
 .person-drawer {
