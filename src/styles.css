@@ -189,12 +189,13 @@ button {
   border-radius: 10px;
   background: #e61d2b;
   overflow: hidden;
+  padding: 10px;
 }
 
 .logo-mark img {
   width: 100%;
   height: 100%;
-  object-fit: cover;
+  object-fit: contain;
 }
 
 .account-copy h1 {
@@ -400,6 +401,7 @@ button {
   color: #1f2937;
   padding: 11px 8px 7px;
   box-shadow: 0 1px 1px rgb(0 0 0 / 5%);
+  touch-action: none;
 }
 
 .person-node.matched {

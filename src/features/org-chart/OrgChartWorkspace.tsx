@@ -1,6 +1,6 @@
-import { Background, Controls, ReactFlow, type Edge } from "@xyflow/react";
+import { Background, Controls, ReactFlow, useNodesState, type Edge } from "@xyflow/react";
 import { Eye, HelpCircle, Info, List, Pencil, Search } from "lucide-react";
-import { useMemo } from "react";
+import { useEffect, useMemo } from "react";
 import { chartEdges, chartNodes, contacts } from "../../data/seed";
 import { useOrgChartStore } from "../../stores/orgChartStore";
 import { PersonNode, type PersonGraphNode } from "./PersonNode";
@@ -23,7 +23,7 @@ export function OrgChartWorkspace() {
   const activePersonId = hoveredPersonId ?? selectedPersonId;
   const selectedContact = contacts.find((contact) => contact.id === activePersonId);
 
-  const nodes = useMemo<PersonGraphNode[]>(
+  const initialNodes = useMemo<PersonGraphNode[]>(
     () =>
       chartNodes.map((node) => {
         const contact = contacts.find((item) => item.id === node.contactId);
@@ -32,25 +32,41 @@ export function OrgChartWorkspace() {
           throw new Error(`Missing contact for node ${node.id}`);
         }
 
-        const matched =
-          normalizedQuery.length === 0 ||
-          [contact.fullName, contact.title, contact.department]
-            .join(" ")
-            .toLowerCase()
-            .includes(normalizedQuery);
-
         return {
           id: node.id,
           type: "person",
           position: node.position,
           data: {
             contact,
-            matched
+            matched: true
           }
         };
       }),
-    [normalizedQuery]
+    []
   );
+
+  const [nodes, setNodes, onNodesChange] = useNodesState<PersonGraphNode>(initialNodes);
+
+  useEffect(() => {
+    setNodes((currentNodes) =>
+      currentNodes.map((node) => {
+        const matched =
+          normalizedQuery.length === 0 ||
+          [node.data.contact.fullName, node.data.contact.title, node.data.contact.department]
+            .join(" ")
+            .toLowerCase()
+            .includes(normalizedQuery);
+
+        return {
+          ...node,
+          data: {
+            ...node.data,
+            matched
+          }
+        };
+      })
+    );
+  }, [normalizedQuery, setNodes]);
 
   const edges = useMemo<Edge[]>(
     () =>
@@ -111,7 +127,8 @@ export function OrgChartWorkspace() {
           minZoom={0.45}
           nodes={nodes}
           nodeTypes={nodeTypes}
-          nodesDraggable={editMode}
+          nodesDraggable
+          onNodesChange={onNodesChange}
           panOnScroll
         >
           <Background color="#d7dee4" gap={22} />
