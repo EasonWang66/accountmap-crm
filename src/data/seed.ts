@@ -22,7 +22,8 @@ export const contacts: Contact[] = [
     title: "Chief Executive Officer",
     department: "Executive",
     location: "Atlanta, GA",
-    relationshipTags: ["SC", "SFTE"]
+    relationshipTags: ["10", "FTE"],
+    cardVariant: "blue"
   },
   {
     id: "cheryl-garvin",
@@ -31,7 +32,8 @@ export const contacts: Contact[] = [
     title: "Chief Operating Officer",
     department: "Operations",
     location: "Atlanta, GA",
-    relationshipTags: ["12", "SFTE"]
+    relationshipTags: ["12", "SFTE"],
+    cardVariant: "blue"
   },
   {
     id: "jon-mcfarland",
@@ -40,7 +42,8 @@ export const contacts: Contact[] = [
     title: "Chief Financial Officer",
     department: "Finance",
     location: "Atlanta, GA",
-    relationshipTags: ["SC", "SFTE", "12"]
+    relationshipTags: ["8", "FTE", "21"],
+    cardVariant: "blue"
   },
   {
     id: "evelyn-chen",
@@ -49,7 +52,8 @@ export const contacts: Contact[] = [
     title: "Chief Technical Officer",
     department: "Technology",
     location: "Atlanta, GA",
-    relationshipTags: []
+    relationshipTags: [],
+    cardVariant: "grey"
   },
   {
     id: "robert-green",
@@ -58,7 +62,8 @@ export const contacts: Contact[] = [
     title: "VP of Operations",
     department: "Operations",
     location: "Atlanta, GA",
-    relationshipTags: []
+    relationshipTags: [],
+    cardVariant: "grey"
   },
   {
     id: "lily-lambert",
@@ -67,7 +72,8 @@ export const contacts: Contact[] = [
     title: "VP of Sales",
     department: "Sales",
     location: "Atlanta, GA",
-    relationshipTags: []
+    relationshipTags: [],
+    cardVariant: "grey"
   },
   {
     id: "emily-wright",
@@ -76,7 +82,8 @@ export const contacts: Contact[] = [
     title: "VP of Finance",
     department: "Finance",
     location: "Atlanta, GA",
-    relationshipTags: ["12"]
+    relationshipTags: ["15"],
+    cardVariant: "blue"
   },
   {
     id: "kevin-sanchez",
@@ -85,7 +92,8 @@ export const contacts: Contact[] = [
     title: "VP of Technology",
     department: "Technology",
     location: "Atlanta, GA",
-    relationshipTags: ["12", "SFTE"]
+    relationshipTags: ["6", "PT"],
+    cardVariant: "blue"
   },
   {
     id: "michelle-brown",
@@ -94,7 +102,8 @@ export const contacts: Contact[] = [
     title: "Chief Operations Officer",
     department: "Operations",
     location: "Atlanta, GA",
-    relationshipTags: ["12", "SFTE"]
+    relationshipTags: ["9", "FTE"],
+    cardVariant: "blue"
   },
   {
     id: "nicole-bennett",
@@ -103,7 +112,8 @@ export const contacts: Contact[] = [
     title: "HR Manager",
     department: "People",
     location: "Atlanta, GA",
-    relationshipTags: ["12", "MPTE"]
+    relationshipTags: [],
+    cardVariant: "grey"
   },
   {
     id: "ryan-edwards",
@@ -112,7 +122,8 @@ export const contacts: Contact[] = [
     title: "Sales Manager",
     department: "Sales",
     location: "Atlanta, GA",
-    relationshipTags: ["12", "SFTE"]
+    relationshipTags: ["22", "FTE"],
+    cardVariant: "blue"
   },
   {
     id: "daniel-walker",
@@ -121,7 +132,8 @@ export const contacts: Contact[] = [
     title: "Software Engineer",
     department: "Technology",
     location: "Atlanta, GA",
-    relationshipTags: ["12", "SFTE"]
+    relationshipTags: ["4", "FTE"],
+    cardVariant: "blue"
   },
   {
     id: "tessa-morris",
@@ -130,7 +142,8 @@ export const contacts: Contact[] = [
     title: "Software Dev Manager",
     department: "Technology",
     location: "Atlanta, GA",
-    relationshipTags: ["12", "MPTE"]
+    relationshipTags: [],
+    cardVariant: "grey"
   }
 ];
 

@@ -19,7 +19,7 @@ export function PersonNode({ data }: NodeProps<PersonGraphNode>) {
 
   return (
     <button
-      className={`person-node ${data.matched ? "matched" : ""} ${isActive ? "active" : ""}`}
+      className={`person-node ${data.contact.cardVariant} ${data.matched ? "matched" : "dimmed"} ${isActive ? "active" : ""}`}
       onBlur={() => setHoveredPerson(undefined)}
       onClick={() => selectPerson(data.contact.id)}
       onFocus={() => setHoveredPerson(data.contact.id)}
@@ -28,11 +28,13 @@ export function PersonNode({ data }: NodeProps<PersonGraphNode>) {
       type="button"
     >
       <Handle className="node-handle" position={Position.Top} type="target" />
-      <div className="person-tags">
-        {data.contact.relationshipTags.map((tag) => (
-          <span key={tag}>{tag}</span>
-        ))}
-      </div>
+      {data.contact.relationshipTags.length > 0 ? (
+        <div className="person-tags">
+          {data.contact.relationshipTags.map((tag) => (
+            <span key={tag}>{tag}</span>
+          ))}
+        </div>
+      ) : null}
       <span className="person-title">{data.contact.title}</span>
       <strong>{data.contact.fullName}</strong>
       <div className="person-actions" aria-hidden="true">
