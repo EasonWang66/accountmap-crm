@@ -58,6 +58,9 @@ export function PersonNode({ data }: NodeProps<PersonGraphNode>) {
           ))}
         </div>
       ) : null}
+      {data.contact.cardVariant === "blue" && data.contact.cardMetric ? (
+        <span className="person-metric">{data.contact.cardMetric}</span>
+      ) : null}
       <span className="person-title">{data.contact.title}</span>
       <strong>{data.contact.fullName}</strong>
       <span className="person-location">{data.contact.location}</span>

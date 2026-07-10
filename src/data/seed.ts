@@ -23,7 +23,8 @@ export const contacts: Contact[] = [
     department: "Executive",
     location: "Atlanta, GA",
     relationshipTags: ["1 C", "2 FTE"],
-    cardVariant: "blue"
+    cardVariant: "blue",
+    cardMetric: 12
   },
   {
     id: "cheryl-garvin",
@@ -33,7 +34,8 @@ export const contacts: Contact[] = [
     department: "Operations",
     location: "Atlanta, GA",
     relationshipTags: ["3 C", "9 FTE"],
-    cardVariant: "blue"
+    cardVariant: "blue",
+    cardMetric: 8
   },
   {
     id: "jon-mcfarland",
@@ -43,7 +45,8 @@ export const contacts: Contact[] = [
     department: "Finance",
     location: "Atlanta, GA",
     relationshipTags: ["12 C", "2 FTE"],
-    cardVariant: "blue"
+    cardVariant: "blue",
+    cardMetric: 14
   },
   {
     id: "evelyn-chen",
@@ -83,7 +86,8 @@ export const contacts: Contact[] = [
     department: "Finance",
     location: "Atlanta, GA",
     relationshipTags: ["4 C", "7 FTE"],
-    cardVariant: "blue"
+    cardVariant: "blue",
+    cardMetric: 5
   },
   {
     id: "kevin-sanchez",
@@ -93,7 +97,8 @@ export const contacts: Contact[] = [
     department: "Technology",
     location: "Atlanta, GA",
     relationshipTags: ["8 C", "5 FTE"],
-    cardVariant: "blue"
+    cardVariant: "blue",
+    cardMetric: 19
   },
   {
     id: "michelle-brown",
@@ -103,7 +108,8 @@ export const contacts: Contact[] = [
     department: "Operations",
     location: "Atlanta, GA",
     relationshipTags: ["2 C", "11 FTE"],
-    cardVariant: "blue"
+    cardVariant: "blue",
+    cardMetric: 7
   },
   {
     id: "nicole-bennett",
@@ -123,7 +129,8 @@ export const contacts: Contact[] = [
     department: "Sales",
     location: "Atlanta, GA",
     relationshipTags: ["6 C", "4 FTE"],
-    cardVariant: "blue"
+    cardVariant: "blue",
+    cardMetric: 11
   },
   {
     id: "daniel-walker",
@@ -133,7 +140,8 @@ export const contacts: Contact[] = [
     department: "Technology",
     location: "Atlanta, GA",
     relationshipTags: ["9 C", "3 FTE"],
-    cardVariant: "blue"
+    cardVariant: "blue",
+    cardMetric: 16
   },
   {
     id: "tessa-morris",

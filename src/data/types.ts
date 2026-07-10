@@ -19,6 +19,7 @@ export type Contact = {
   location: string;
   relationshipTags: string[];
   cardVariant: "blue" | "grey";
+  cardMetric?: number;
 };
 
 export type ChartNode = {

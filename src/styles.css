@@ -453,6 +453,21 @@ button {
   background: #0d3b52;
 }
 
+.person-metric {
+  position: absolute;
+  top: -14px;
+  right: -14px;
+  min-width: 30px;
+  border-radius: 999px;
+  background: #176b91;
+  color: white;
+  font-size: 11px;
+  font-weight: 800;
+  line-height: 18px;
+  padding: 0 8px;
+  text-align: center;
+}
+
 .person-title {
   color: #6b7280;
   font-size: 9px;
