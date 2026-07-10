@@ -58,7 +58,8 @@ export function OrgChartWorkspace() {
         target: edge.targetNodeId,
         type: "smoothstep",
         animated: editMode,
-        style: { stroke: "#a8b3bd", strokeWidth: 1.5 }
+        pathOptions: { borderRadius: 24 },
+        style: { stroke: "#a8b3bd", strokeLinecap: "round", strokeLinejoin: "round", strokeWidth: 1.6 }
       })),
     [editMode]
   );

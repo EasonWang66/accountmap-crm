@@ -6,7 +6,7 @@
 - Add formal documentation.
 - Scaffold React, TypeScript, Vite, Tailwind, and testing tools.
 - Add linting and formatting.
-- Add seed data for the Finovatech account.
+- Add seed data for the Coca-Cola account.
 
 ## Milestone 2: Static CRM Interface
 
@@ -20,7 +20,7 @@
 
 - Install and configure React Flow.
 - Create custom person node component.
-- Render Finovatech hierarchy from typed seed data.
+- Render Coca-Cola hierarchy from typed seed data.
 - Add chart controls for zoom, legend, info, and search.
 
 ## Milestone 4: Editing Workflows

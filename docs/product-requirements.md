@@ -35,7 +35,7 @@ Traditional CRM account pages often separate contact records from relationship c
 The MVP includes:
 
 - Left CRM navigation.
-- Account header for Finovatech.
+- Account header for Coca-Cola.
 - Account metadata including tags, description, phone, email, website, and address.
 - Tab bar with Overview, Organizational Chart, Activity Timeline, Contract History, and Competitors.
 - Organizational Chart as the active default tab.

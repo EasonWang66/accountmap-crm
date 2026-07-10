@@ -17,7 +17,7 @@ Sales, recruiting, and account management teams often need more than a flat cont
 ## Core Features
 
 - CRM shell with persistent navigation for Home, Accounts, Leads, and Requisitions.
-- Account detail page modeled after the Finovatech Figma design.
+- Account detail page modeled after the Coca-Cola Figma design.
 - Account summary header with company metadata and contact channels.
 - Tabbed workspace for overview, organizational chart, activity timeline, contract history, and competitors.
 - Editable organizational chart with person cards, hierarchy lines, relationship tags, and search.

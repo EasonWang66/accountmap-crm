@@ -1,21 +1,21 @@
 import type { Account, ChartEdge, ChartNode, Contact } from "./types";
 
 export const finovatechAccount: Account = {
-  id: "acct-finovatech",
-  name: "Finovatech",
-  industryTags: ["Technology", "Finance"],
+  id: "acct-coca-cola",
+  name: "Coca-Cola",
+  industryTags: ["Beverage", "Consumer Goods"],
   description:
-    "Finovatech is a cutting-edge technology finance company dedicated to empowering businesses and individuals with innovative financial solutions. By leveraging advanced AI, blockchain technology, and data analytics, Finovatech provides secure, efficient, and personalized financial management tools.",
-  phone: "404-527-9868",
-  email: "finovatech@gmail.com",
-  website: "https://finovatech.com",
-  address: "123 Innovation Drive, Suite 456, Atlanta, GA 30303"
+    "Coca-Cola is a global beverage company with a broad portfolio of sparkling drinks, hydration products, coffees, teas, and nutrition brands. The account workspace maps cross-functional stakeholders across marketing, finance, supply chain, and technology teams for enterprise relationship planning.",
+  phone: "404-676-2121",
+  email: "partnerships@coca-cola.com",
+  website: "https://www.coca-colacompany.com",
+  address: "One Coca-Cola Plaza, Atlanta, GA 30313"
 };
 
 export const contacts: Contact[] = [
   {
     id: "robert-elbert",
-    accountId: "acct-finovatech",
+    accountId: "acct-coca-cola",
     fullName: "Robert Elbert",
     title: "Chief Executive Officer",
     department: "Executive",
@@ -24,7 +24,7 @@ export const contacts: Contact[] = [
   },
   {
     id: "cheryl-garvin",
-    accountId: "acct-finovatech",
+    accountId: "acct-coca-cola",
     fullName: "Cheryl Garvin",
     title: "Chief Operating Officer",
     department: "Operations",
@@ -33,7 +33,7 @@ export const contacts: Contact[] = [
   },
   {
     id: "jon-mcfarland",
-    accountId: "acct-finovatech",
+    accountId: "acct-coca-cola",
     fullName: "Jon McFarland",
     title: "Chief Financial Officer",
     department: "Finance",
@@ -42,7 +42,7 @@ export const contacts: Contact[] = [
   },
   {
     id: "evelyn-chen",
-    accountId: "acct-finovatech",
+    accountId: "acct-coca-cola",
     fullName: "Evelyn Chen",
     title: "Chief Technical Officer",
     department: "Technology",
@@ -51,7 +51,7 @@ export const contacts: Contact[] = [
   },
   {
     id: "robert-green",
-    accountId: "acct-finovatech",
+    accountId: "acct-coca-cola",
     fullName: "Robert Green",
     title: "VP of Operations",
     department: "Operations",
@@ -60,7 +60,7 @@ export const contacts: Contact[] = [
   },
   {
     id: "lily-lambert",
-    accountId: "acct-finovatech",
+    accountId: "acct-coca-cola",
     fullName: "Lily Lambert",
     title: "VP of Sales",
     department: "Sales",
@@ -69,7 +69,7 @@ export const contacts: Contact[] = [
   },
   {
     id: "emily-wright",
-    accountId: "acct-finovatech",
+    accountId: "acct-coca-cola",
     fullName: "Emily Wright",
     title: "VP of Finance",
     department: "Finance",
@@ -78,7 +78,7 @@ export const contacts: Contact[] = [
   },
   {
     id: "kevin-sanchez",
-    accountId: "acct-finovatech",
+    accountId: "acct-coca-cola",
     fullName: "Kevin Sanchez",
     title: "VP of Technology",
     department: "Technology",
@@ -87,7 +87,7 @@ export const contacts: Contact[] = [
   },
   {
     id: "michelle-brown",
-    accountId: "acct-finovatech",
+    accountId: "acct-coca-cola",
     fullName: "Michelle Brown",
     title: "Chief Operations Officer",
     department: "Operations",
@@ -96,7 +96,7 @@ export const contacts: Contact[] = [
   },
   {
     id: "nicole-bennett",
-    accountId: "acct-finovatech",
+    accountId: "acct-coca-cola",
     fullName: "Nicole Bennett",
     title: "HR Manager",
     department: "People",
@@ -105,7 +105,7 @@ export const contacts: Contact[] = [
   },
   {
     id: "ryan-edwards",
-    accountId: "acct-finovatech",
+    accountId: "acct-coca-cola",
     fullName: "Ryan Edwards",
     title: "Sales Manager",
     department: "Sales",
@@ -114,7 +114,7 @@ export const contacts: Contact[] = [
   },
   {
     id: "daniel-walker",
-    accountId: "acct-finovatech",
+    accountId: "acct-coca-cola",
     fullName: "Daniel Walker",
     title: "Software Engineer",
     department: "Technology",
@@ -123,7 +123,7 @@ export const contacts: Contact[] = [
   },
   {
     id: "tessa-morris",
-    accountId: "acct-finovatech",
+    accountId: "acct-coca-cola",
     fullName: "Tessa Morris",
     title: "Software Dev Manager",
     department: "Technology",
@@ -162,4 +162,3 @@ export const chartEdges: ChartEdge[] = [
   { id: "edge-tech-daniel", sourceNodeId: "node-kevin-sanchez", targetNodeId: "node-daniel-walker", relationshipType: "reports-to" },
   { id: "edge-tech-tessa", sourceNodeId: "node-kevin-sanchez", targetNodeId: "node-tessa-morris", relationshipType: "reports-to" }
 ];
-

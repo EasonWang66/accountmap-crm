@@ -29,7 +29,7 @@ Use React Testing Library for:
 
 Use Playwright for:
 
-- loading the Finovatech account page
+- loading the Coca-Cola account page
 - switching tabs
 - searching for a person in the org chart
 - entering edit mode
