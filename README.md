@@ -49,6 +49,7 @@ Sales, recruiting, and account management teams often need more than a flat cont
 - [Data Model](docs/data-model.md)
 - [Implementation Plan](docs/implementation-plan.md)
 - [Testing Strategy](docs/testing-strategy.md)
+- [Local Development](docs/local-development.md)
 
 ## Engineering Positioning
 
@@ -63,7 +64,8 @@ npm run test
 npm run test:e2e
 ```
 
+If package installation fails inside a restricted environment, run the same commands from a local terminal with npm registry access.
+
 ## Planned Deployment
 
 The frontend will be deployed as a static web application and linked from the owner's Framer portfolio. If Supabase is added, the hosted Supabase project will provide authentication and Postgres persistence while the app remains accessible through the Framer project page.
-
