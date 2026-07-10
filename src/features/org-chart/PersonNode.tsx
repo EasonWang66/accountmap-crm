@@ -1,4 +1,4 @@
-import { Mail, Phone, UserRound } from "lucide-react";
+import { Linkedin, Mail, Phone } from "lucide-react";
 import { Handle, Position, type Node, type NodeProps } from "@xyflow/react";
 import type { Contact } from "../../data/types";
 import { useOrgChartStore } from "../../stores/orgChartStore";
@@ -39,9 +39,9 @@ export function PersonNode({ data }: NodeProps<PersonGraphNode>) {
       <strong>{data.contact.fullName}</strong>
       <span className="person-location">{data.contact.location}</span>
       <div className="person-actions" aria-hidden="true">
-        <Phone size={12} />
-        <Mail size={12} />
-        <UserRound size={12} />
+        <Phone size={11} strokeWidth={3} />
+        <Mail size={11} strokeWidth={3} />
+        <Linkedin size={11} strokeWidth={3} />
       </div>
       <Handle className="node-handle" position={Position.Bottom} type="source" />
     </button>
