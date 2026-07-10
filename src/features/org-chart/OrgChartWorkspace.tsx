@@ -130,6 +130,7 @@ export function OrgChartWorkspace() {
           nodesDraggable
           onNodesChange={onNodesChange}
           panOnScroll
+          proOptions={{ hideAttribution: true }}
         >
           <Background color="#d7dee4" gap={22} />
           <Controls showInteractive={false} />
