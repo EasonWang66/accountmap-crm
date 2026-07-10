@@ -4,11 +4,11 @@ AccountMap CRM is a frontend-focused customer relationship management workspace 
 
 ## Live Demo
 
-Demo URL: To be added after deployment.
+[View the live demo](https://igcrm-two.vercel.app/)
 
 ## Project Status
 
-Planning and implementation setup are in progress.
+Frontend MVP is deployed. Current work focuses on visual fidelity, editable org chart interactions, and portfolio-ready documentation.
 
 ## Why This Project
 
@@ -66,6 +66,20 @@ npm run test:e2e
 
 If package installation fails inside a restricted environment, run the same commands from a local terminal with npm registry access.
 
-## Planned Deployment
+## Deployment
 
-The frontend will be deployed as a static web application and linked from the owner's Framer portfolio. If Supabase is added, the hosted Supabase project will provide authentication and Postgres persistence while the app remains accessible through the Framer project page.
+The frontend is deployed on Vercel:
+
+[https://igcrm-two.vercel.app/](https://igcrm-two.vercel.app/)
+
+Recommended Framer embed:
+
+```html
+<iframe
+  src="https://igcrm-two.vercel.app/"
+  style="width:100%; height:800px; border:0; border-radius:12px;"
+  title="AccountMap CRM live demo"
+></iframe>
+```
+
+If Supabase is added later, the hosted Supabase project will provide authentication and Postgres persistence while the app remains accessible through the Framer project page.
