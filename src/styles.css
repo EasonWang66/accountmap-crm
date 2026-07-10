@@ -267,6 +267,7 @@ button {
 }
 
 .chart-panel {
+  position: relative;
   min-height: 620px;
   border-radius: 4px;
   background: white;
@@ -350,7 +351,8 @@ button {
 }
 
 .flow-frame {
-  height: 530px;
+  height: min(58vh, 560px);
+  min-height: 470px;
   border: 1px solid #edf1f4;
   background: #fff;
 }
@@ -360,7 +362,13 @@ button {
   outline-offset: 2px;
 }
 
+.node-handle,
 .react-flow__handle {
+  width: 1px;
+  height: 1px;
+  min-width: 1px;
+  min-height: 1px;
+  border: 0;
   opacity: 0;
 }
 
@@ -368,13 +376,13 @@ button {
   position: relative;
   display: grid;
   justify-items: center;
-  width: 130px;
-  min-height: 70px;
+  width: 118px;
+  min-height: 64px;
   border: 1px solid #c7cfd6;
   border-radius: 4px;
   background: #f9fafb;
   color: #1f2937;
-  padding: 12px 8px 8px;
+  padding: 11px 8px 7px;
   box-shadow: 0 1px 1px rgb(0 0 0 / 5%);
 }
 
@@ -397,7 +405,7 @@ button {
 }
 
 .person-tags span {
-  min-width: 24px;
+  min-width: 22px;
   border-radius: 3px 3px 0 0;
   background: #176b91;
   color: white;
@@ -415,15 +423,78 @@ button {
 .person-node strong {
   margin-top: 2px;
   color: #202a33;
-  font-size: 12px;
+  font-size: 11px;
   line-height: 1.2;
 }
 
 .person-actions {
   display: flex;
-  gap: 11px;
-  margin-top: 7px;
+  gap: 10px;
+  margin-top: 6px;
   color: #111827;
+}
+
+.person-drawer {
+  position: absolute;
+  right: 46px;
+  bottom: 44px;
+  display: grid;
+  gap: 12px;
+  width: 260px;
+  min-height: 104px;
+  border: 1px solid #d8e3ea;
+  border-radius: 6px;
+  background: rgb(255 255 255 / 94%);
+  padding: 14px;
+  color: #263746;
+  box-shadow: 0 12px 30px rgb(13 59 82 / 12%);
+}
+
+.person-drawer h2,
+.person-drawer p {
+  margin: 0;
+}
+
+.person-drawer h2 {
+  margin-top: 2px;
+  font-size: 15px;
+}
+
+.person-drawer span,
+.person-drawer p,
+.person-drawer dt,
+.person-drawer dd {
+  font-size: 12px;
+}
+
+.person-drawer span,
+.person-drawer dt {
+  color: #6b7280;
+  font-weight: 700;
+}
+
+.person-drawer dl {
+  display: grid;
+  gap: 8px;
+  margin: 0;
+}
+
+.person-drawer dd {
+  margin: 2px 0 0;
+}
+
+.drawer-field {
+  display: grid;
+  gap: 6px;
+  font-size: 12px;
+  font-weight: 700;
+}
+
+.drawer-field input {
+  min-height: 34px;
+  border: 1px solid #9ab7c8;
+  border-radius: 4px;
+  padding: 0 10px;
 }
 
 @media (max-width: 1100px) {
@@ -449,4 +520,3 @@ button {
     grid-column: 2;
   }
 }
-

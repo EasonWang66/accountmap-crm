@@ -1,5 +1,5 @@
 import { Mail, Phone, UserRound } from "lucide-react";
-import type { Node, NodeProps } from "@xyflow/react";
+import { Handle, Position, type Node, type NodeProps } from "@xyflow/react";
 import type { Contact } from "../../data/types";
 import { useOrgChartStore } from "../../stores/orgChartStore";
 
@@ -22,6 +22,7 @@ export function PersonNode({ data }: NodeProps<PersonGraphNode>) {
       onClick={() => selectPerson(data.contact.id)}
       type="button"
     >
+      <Handle className="node-handle" position={Position.Top} type="target" />
       <div className="person-tags">
         {data.contact.relationshipTags.map((tag) => (
           <span key={tag}>{tag}</span>
@@ -34,6 +35,7 @@ export function PersonNode({ data }: NodeProps<PersonGraphNode>) {
         <Mail size={12} />
         <UserRound size={12} />
       </div>
+      <Handle className="node-handle" position={Position.Bottom} type="source" />
     </button>
   );
 }

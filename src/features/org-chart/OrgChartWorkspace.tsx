@@ -12,10 +12,14 @@ const nodeTypes = {
 export function OrgChartWorkspace() {
   const editMode = useOrgChartStore((state) => state.editMode);
   const query = useOrgChartStore((state) => state.query);
+  const selectedPersonId = useOrgChartStore((state) => state.selectedPersonId);
+  const draftName = useOrgChartStore((state) => state.draftName);
   const setEditMode = useOrgChartStore((state) => state.setEditMode);
   const setQuery = useOrgChartStore((state) => state.setQuery);
+  const setDraftName = useOrgChartStore((state) => state.setDraftName);
 
   const normalizedQuery = query.trim().toLowerCase();
+  const selectedContact = contacts.find((contact) => contact.id === selectedPersonId);
 
   const nodes = useMemo<PersonGraphNode[]>(
     () =>
@@ -99,6 +103,7 @@ export function OrgChartWorkspace() {
         <ReactFlow
           edges={edges}
           fitView
+          fitViewOptions={{ padding: 0.2 }}
           maxZoom={1.35}
           minZoom={0.45}
           nodes={nodes}
@@ -110,6 +115,40 @@ export function OrgChartWorkspace() {
           <Controls showInteractive={false} />
         </ReactFlow>
       </div>
+      <aside className={selectedContact ? "person-drawer open" : "person-drawer"} aria-label="Selected person details">
+        {selectedContact ? (
+          <>
+            <div>
+              <span>{selectedContact.department}</span>
+              <h2>{selectedContact.fullName}</h2>
+              <p>{selectedContact.title}</p>
+            </div>
+            {editMode ? (
+              <label className="drawer-field">
+                Display name
+                <input
+                  onChange={(event) => setDraftName(event.target.value)}
+                  placeholder={selectedContact.fullName}
+                  value={draftName}
+                />
+              </label>
+            ) : (
+              <dl>
+                <div>
+                  <dt>Location</dt>
+                  <dd>{selectedContact.location}</dd>
+                </div>
+                <div>
+                  <dt>Relationship</dt>
+                  <dd>{selectedContact.relationshipTags.join(", ") || "Unclassified"}</dd>
+                </div>
+              </dl>
+            )}
+          </>
+        ) : (
+          <p>Select a person card to inspect account relationships.</p>
+        )}
+      </aside>
     </section>
   );
 }
