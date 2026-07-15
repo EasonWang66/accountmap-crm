@@ -1,78 +1,126 @@
-# AccountMap CRM
+# **AccountMap CRM**
 
-AccountMap CRM is a frontend-focused customer relationship management workspace built around an editable organizational chart for account mapping. The project is designed as a portfolio-ready software engineering case study, with React-based UI architecture, production-style documentation, and a light full-stack data model that can be backed by Supabase or a custom API.
+## **Description**
 
-## Live Demo
+This project showcases part of my contribution to a semester-long sponsored project for **Insight Global**, focused on designing and developing a CRM-style account workspace with an editable organizational chart interface. The build highlights a frontend-heavy product experience for account relationship mapping, where users can inspect stakeholder hierarchy, understand relationship metadata, and reposition people directly inside the organizational chart.
 
-[View the live demo](https://igcrm-two.vercel.app/)
+This implementation focuses on the **Accounts** section of the CRM experience — account profile summary, tabbed account workspace, and organizational chart view — with an emphasis on **interactive frontend engineering** (React Flow-powered draggable cards, hover-driven card inspection, controlled graph state, and reusable CRM components) and **portfolio-ready engineering workflow** (formal documentation, typed data models, GitHub version control, CI, and Vercel deployment).
 
-## Project Status
+## **Link to Live Demo**
 
-Frontend MVP is deployed. Current work focuses on visual fidelity, editable org chart interactions, and portfolio-ready documentation.
+[https://igcrm-two.vercel.app/](https://igcrm-two.vercel.app/)
 
-## Why This Project
+## **Tools and Technologies Used**
 
-Sales, recruiting, and account management teams often need more than a flat contact list. They need to understand who reports to whom, who influences decisions, and where relationship gaps exist inside an account. AccountMap CRM turns a company profile into an interactive workspace where users can inspect and edit an account's organizational structure.
+**React** — component-based architecture for the CRM shell, account header, tabs, toolbar, and org chart cards  
+**TypeScript** — typed account, contact, org chart node, and edge models  
+**Vite** — build tooling and dev server  
+**React Flow** — draggable organizational chart nodes, hierarchy edges, canvas controls, and graph rendering  
+**Zustand** — lightweight UI state for edit mode, search query, hovered person, selected person, and draft edits  
+**TanStack Query** — planned server-state layer for future API/Supabase integration  
+**React Hook Form + Zod** — planned form management and validation for editable contact workflows  
+**CSS3** — custom layout styling, responsive viewport constraints, card variants, hover states, and CRM interface polish  
+**Figma** — source of truth for the CRM interface and organizational chart card design  
+**Vitest** — unit tests for org chart data integrity  
+**Playwright** — planned end-to-end tests for account workspace flows  
+**Git & GitHub** — version control and public project documentation  
+**Vercel** — hosting and deployment
 
-## Core Features
+## **Pages**
 
-- CRM shell with persistent navigation for Home, Accounts, Leads, and Requisitions.
-- Account detail page modeled after the Coca-Cola Figma design.
-- Account summary header with company metadata and contact channels.
-- Tabbed workspace for overview, organizational chart, activity timeline, contract history, and competitors.
-- Editable organizational chart with person cards, hierarchy lines, relationship tags, and search.
-- Add, edit, delete, and reposition org chart contacts.
-- Mock persistence first, with a documented path to Supabase/Postgres.
-- Loading, empty, error, and unsaved-change states.
+`/` — Account workspace: CRM sidebar, account profile header, account tabs, organizational chart toolbar, draggable org chart canvas, hover-driven person detail panel.
 
-## Tech Stack
+The current MVP is implemented as a single-page React application. It uses shared seed data from `src/data/seed.ts` for account metadata, contacts, organizational chart nodes, and hierarchy edges, so the interface behaves like a connected product view rather than a static mockup.
 
-- React
-- TypeScript
-- Vite
-- React Flow
-- Zustand
-- TanStack Query
-- React Hook Form
-- Zod
-- Tailwind CSS
-- Vitest
-- React Testing Library
-- Playwright
-- Storybook, planned after MVP
-- Supabase/Postgres, planned as a full-stack milestone
+## **Core Interface Features**
 
-## Documentation
+**CRM shell** — persistent left navigation, top bar user profile, and account workspace layout.  
+**Account profile header** — Coca-Cola account metadata, tags, contact details, and brand imagery.  
+**Tabbed workspace** — overview, organizational chart, activity timeline, contract history, and competitors tabs.  
+**Organizational chart canvas** — React Flow hierarchy with draggable cards and smooth connector edges.  
+**Card variants** — blue and grey org chart cards matching the Figma card system, including C/FTE tags and metric badges for blue cards.  
+**Hover inspection** — hovering a person card highlights the card and updates the detail drawer.  
+**Editable foundation** — edit mode, draft field state, controlled node positions, and documented path toward full add/edit/delete contact workflows.
 
-- [Product Requirements](docs/product-requirements.md)
-- [Frontend Architecture](docs/frontend-architecture.md)
-- [Data Model](docs/data-model.md)
-- [Implementation Plan](docs/implementation-plan.md)
-- [Testing Strategy](docs/testing-strategy.md)
-- [Local Development](docs/local-development.md)
+## **Responsive and Interaction Strategy**
 
-## Engineering Positioning
+Built as a desktop-first CRM workspace with controlled viewport behavior:
 
-This project is intentionally frontend-heavy. The primary hiring signal is the ability to build a polished, complex, data-driven React interface with strong state management, reusable components, graph-based interactions, and realistic testing. The backend scope is included to show full-stack awareness without taking attention away from the core frontend product.
+**Viewport fit** — app shell is constrained to the display height so the CRM interface behaves like a product dashboard rather than a long marketing page.  
+**Flexible workspace grid** — account header, tabs, and chart canvas are arranged with fixed dashboard regions and a flexible chart area.  
+**Graph interaction** — org chart cards are controlled React Flow nodes, allowing card dragging while preserving hierarchy edges.  
+**Hover-first inspection** — card focus is triggered by hover/focus to support fast scanning across the chart.  
+**Future responsive work** — tablet and mobile behavior will prioritize a condensed sidebar, stacked account metadata, and horizontal chart navigation.
 
-## Planned Local Development
+## **Getting Started**
 
 ```bash
 npm install
 npm run dev
-npm run test
-npm run test:e2e
 ```
 
-If package installation fails inside a restricted environment, run the same commands from a local terminal with npm registry access.
+Build for production:
 
-## Deployment
+```bash
+npm run build
+```
 
-The frontend is deployed on Vercel:
+Run checks:
 
-[https://igcrm-two.vercel.app/](https://igcrm-two.vercel.app/)
+```bash
+npm run lint
+npm run test -- --run
+```
 
-Recommended Framer embed:
+## **Project Structure**
+
+```text
+accountmap-crm/
+  index.html                 Vite entry point
+  vite.config.ts             Vite and Vitest configuration
+  package.json               scripts and dependencies
+  package-lock.json          locked dependency tree
+  playwright.config.ts       planned e2e test configuration
+  eslint.config.js           lint configuration
+  .github/workflows/ci.yml   GitHub Actions verification workflow
+  docs/
+    product-requirements.md
+    frontend-architecture.md
+    data-model.md
+    implementation-plan.md
+    testing-strategy.md
+    local-development.md
+  src/
+    main.tsx                 React root and providers
+    styles.css               global layout, CRM styling, org chart card design
+    vite-env.d.ts            Vite asset type support
+    app/
+      App.tsx                account workspace composition
+    assets/
+      coca-cola-logo.webp    account logo asset
+      profile-photo.jpg      top-bar user profile image
+    components/
+      CrmShell.tsx           sidebar, top bar, and app shell
+      AccountHeader.tsx      account profile summary
+      AccountTabs.tsx        account workspace tabs
+    data/
+      types.ts               Account, Contact, ChartNode, ChartEdge types
+      seed.ts                shared CRM and org chart dataset
+    features/
+      org-chart/
+        OrgChartWorkspace.tsx  React Flow canvas, toolbar, drawer
+        PersonNode.tsx         custom org chart card node
+        orgChart.test.ts       seed data integrity tests
+    stores/
+      orgChartStore.ts       Zustand UI state
+    test/
+      setup.ts               Vitest setup
+  tests/
+    e2e/
+      account-workspace.spec.ts
+```
+
+## **Framer Embed**
 
 ```html
 <iframe
@@ -81,5 +129,3 @@ Recommended Framer embed:
   title="AccountMap CRM live demo"
 ></iframe>
 ```
-
-If Supabase is added later, the hosted Supabase project will provide authentication and Postgres persistence while the app remains accessible through the Framer project page.
