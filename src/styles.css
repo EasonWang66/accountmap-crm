@@ -851,7 +851,26 @@ button {
   transition: transform 160ms ease;
 }
 
+.contact-list-drawer {
+  position: fixed;
+  top: 0;
+  right: 0;
+  z-index: 21;
+  width: min(360px, 92vw);
+  height: 100vh;
+  overflow: hidden;
+  background: #ffffff;
+  color: #050505;
+  box-shadow: -18px 0 36px rgb(15 23 42 / 18%);
+  transform: translateX(105%);
+  transition: transform 160ms ease;
+}
+
 .version-history-drawer.open {
+  transform: translateX(0);
+}
+
+.contact-list-drawer.open {
   transform: translateX(0);
 }
 
@@ -862,10 +881,96 @@ button {
   padding: 82px 32px 36px;
 }
 
+.contact-list-content {
+  position: relative;
+  display: grid;
+  align-content: start;
+  gap: 26px;
+  height: 100%;
+  overflow-y: auto;
+  padding: 82px 32px 36px;
+}
+
 .version-history-content h2 {
   margin: 0 0 32px;
   font-size: 28px;
   line-height: 1.1;
+}
+
+.contact-list-content h2 {
+  margin: 0;
+  font-size: 28px;
+  line-height: 1.1;
+}
+
+.contact-list-search {
+  display: grid;
+  grid-template-columns: 1fr 28px;
+  align-items: center;
+  min-height: 44px;
+  border: 2px solid #222222;
+  border-radius: 5px;
+  background: #ffffff;
+  color: #050505;
+}
+
+.contact-list-search input {
+  min-width: 0;
+  border: 0;
+  background: transparent;
+  padding: 0 12px;
+  color: #111111;
+  outline: 0;
+  font-size: 16px;
+}
+
+.contact-list-search input::placeholder {
+  color: #999999;
+}
+
+.contact-list-items {
+  display: grid;
+}
+
+.contact-list-item {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  min-height: 84px;
+  border: 0;
+  border-bottom: 1px solid #d9d9d9;
+  background: transparent;
+  color: #050505;
+  padding: 0;
+  text-align: left;
+}
+
+.contact-list-item span {
+  display: grid;
+  gap: 6px;
+  padding-left: 18px;
+}
+
+.contact-list-item strong,
+.contact-list-item em {
+  display: block;
+}
+
+.contact-list-item strong {
+  font-size: 20px;
+  line-height: 1.1;
+}
+
+.contact-list-item em {
+  color: #606060;
+  font-size: 17px;
+  font-style: italic;
+  line-height: 1.15;
+}
+
+.contact-list-item svg {
+  flex: 0 0 auto;
+  color: #050505;
 }
 
 .version-month {

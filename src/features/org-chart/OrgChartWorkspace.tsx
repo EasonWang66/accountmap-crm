@@ -206,6 +206,8 @@ export function OrgChartWorkspace() {
     constrainOrgChartEdges(chartEdges)
   );
   const [versionPanelOpen, setVersionPanelOpen] = useState(false);
+  const [contactListPanelOpen, setContactListPanelOpen] = useState(false);
+  const [contactListQuery, setContactListQuery] = useState("");
   const pendingConnectionRef = useRef<PendingConnection | undefined>(undefined);
   const nextContactIndexRef = useRef(seedContacts.length + 1);
 
@@ -217,7 +219,6 @@ export function OrgChartWorkspace() {
     selectedContact && isPlaceholderContact(selectedContact)
       ? selectedContactBio
       : `${selectedContactBio.slice(0, 230)}...`;
-
   const createPlaceholderContact = useCallback((index: number): Contact => {
     return {
       id: `new-contact-${index}`,
@@ -255,6 +256,24 @@ export function OrgChartWorkspace() {
   );
 
   const [nodes, setNodes, onNodesChange] = useNodesState<PersonGraphNode>(initialNodes);
+  const visibleChartContacts = useMemo(
+    () => nodes.map((node) => node.data.contact),
+    [nodes]
+  );
+  const filteredChartContacts = useMemo(() => {
+    const normalizedListQuery = contactListQuery.trim().toLowerCase();
+
+    if (!normalizedListQuery) {
+      return visibleChartContacts;
+    }
+
+    return visibleChartContacts.filter((contact) =>
+      [contact.fullName, contact.title, contact.department, contact.location]
+        .join(" ")
+        .toLowerCase()
+        .includes(normalizedListQuery)
+    );
+  }, [contactListQuery, visibleChartContacts]);
 
   const deleteContactNode = useCallback(
     (nodeId: string) => {
@@ -491,6 +510,7 @@ export function OrgChartWorkspace() {
             aria-label="Version history"
             onClick={() => {
               setVersionPanelOpen(true);
+              setContactListPanelOpen(false);
               selectPerson(undefined);
               setHoveredPerson(undefined);
             }}
@@ -504,16 +524,25 @@ export function OrgChartWorkspace() {
               Add Contact
             </button>
           ) : null}
-          <button className="icon-button" aria-label="List view" disabled={editMode} type="button">
+          <button
+            className="icon-button"
+            aria-label="All contacts"
+            onClick={() => {
+              setContactListPanelOpen(true);
+              setVersionPanelOpen(false);
+              selectPerson(undefined);
+              setHoveredPerson(undefined);
+            }}
+            type="button"
+          >
             <List size={15} />
           </button>
           <button className="icon-button" aria-label="Preview visibility" disabled={editMode} type="button">
             <Eye size={15} />
           </button>
-          <label className={editMode ? "search-field disabled" : "search-field"}>
+          <label className="search-field">
             <span className="sr-only">Search people</span>
             <input
-              disabled={editMode}
               onChange={(event) => setQuery(event.target.value)}
               placeholder="Search"
               type="search"
@@ -558,10 +587,10 @@ export function OrgChartWorkspace() {
         </ReactFlow>
       </div>
       <aside
-        className={`${selectedContact && !versionPanelOpen ? "person-drawer open" : "person-drawer"} ${editMode ? "edit-drawer" : ""}`}
+        className={`${selectedContact && !versionPanelOpen && !contactListPanelOpen ? "person-drawer open" : "person-drawer"} ${editMode ? "edit-drawer" : ""}`}
         aria-label="Selected person details"
       >
-        {selectedContact && !versionPanelOpen ? (
+        {selectedContact && !versionPanelOpen && !contactListPanelOpen ? (
           <div className="drawer-content">
             <button
               aria-label="Close contact details"
@@ -742,6 +771,51 @@ export function OrgChartWorkspace() {
               </div>
             </section>
           ))}
+        </div>
+      </aside>
+      <aside
+        className={contactListPanelOpen ? "contact-list-drawer open" : "contact-list-drawer"}
+        aria-label="All contacts"
+      >
+        <div className="contact-list-content">
+          <button
+            aria-label="Close all contacts"
+            className="drawer-close"
+            onClick={() => setContactListPanelOpen(false)}
+            type="button"
+          >
+            <X size={24} aria-hidden="true" />
+          </button>
+          <h2>All Contacts</h2>
+          <label className="contact-list-search">
+            <span className="sr-only">Search for contact</span>
+            <input
+              onChange={(event) => setContactListQuery(event.target.value)}
+              placeholder="Search for contact"
+              type="search"
+              value={contactListQuery}
+            />
+            <Search size={22} aria-hidden="true" />
+          </label>
+          <div className="contact-list-items">
+            {filteredChartContacts.map((contact) => (
+              <button
+                className="contact-list-item"
+                key={contact.id}
+                onClick={() => {
+                  selectPerson(contact.id);
+                  setContactListPanelOpen(false);
+                }}
+                type="button"
+              >
+                <span>
+                  <strong>{contact.fullName}</strong>
+                  <em>{contact.title.replace("Chief Executive Officer", "CEO")}</em>
+                </span>
+                <ChevronRight size={26} aria-hidden="true" />
+              </button>
+            ))}
+          </div>
         </div>
       </aside>
     </section>
