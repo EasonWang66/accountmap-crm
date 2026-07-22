@@ -628,66 +628,325 @@ button {
 }
 
 .person-drawer {
+  position: fixed;
+  top: 0;
+  right: 0;
+  z-index: 20;
+  width: min(360px, 92vw);
+  height: 100vh;
+  overflow-y: auto;
+  background: #ffffff;
+  color: #0f172a;
+  box-shadow: -18px 0 36px rgb(15 23 42 / 18%);
+  transform: translateX(105%);
+  transition: transform 160ms ease;
+}
+
+.person-drawer.open {
+  transform: translateX(0);
+}
+
+.person-drawer.edit-drawer {
+  width: min(390px, 92vw);
+  box-shadow: -14px 0 40px rgb(0 0 0 / 30%);
+}
+
+.drawer-content {
+  position: relative;
+  display: grid;
+  min-height: 100%;
+  align-content: start;
+  gap: 24px;
+  padding: 64px 28px 28px;
+}
+
+.drawer-close {
   position: absolute;
-  right: 46px;
-  bottom: 44px;
+  top: 18px;
+  right: 18px;
+  display: grid;
+  place-items: center;
+  width: 34px;
+  height: 34px;
+  border: 0;
+  background: transparent;
+  color: #050505;
+  padding: 0;
+}
+
+.drawer-avatar {
+  width: 164px;
+  height: 164px;
+  justify-self: center;
+  border-radius: 999px;
+  object-fit: cover;
+}
+
+.drawer-identity {
+  display: grid;
+  justify-items: center;
+  gap: 8px;
+  text-align: center;
+}
+
+.drawer-identity p,
+.drawer-identity h2 {
+  margin: 0;
+}
+
+.drawer-identity p {
+  font-size: 26px;
+  font-style: italic;
+  line-height: 1.1;
+}
+
+.drawer-identity h2 {
+  font-size: 28px;
+  line-height: 1.1;
+}
+
+.drawer-contact-list {
   display: grid;
   gap: 12px;
-  width: 260px;
-  min-height: 104px;
-  border: 1px solid #d8e3ea;
-  border-radius: 6px;
-  background: rgb(255 255 255 / 94%);
-  padding: 14px;
-  color: #263746;
-  box-shadow: 0 12px 30px rgb(13 59 82 / 12%);
+  width: min(270px, 100%);
+  justify-self: center;
 }
 
-.person-drawer h2,
-.person-drawer p {
-  margin: 0;
-}
-
-.person-drawer h2 {
-  margin-top: 2px;
-  font-size: 15px;
-}
-
-.person-drawer span,
-.person-drawer p,
-.person-drawer dt,
-.person-drawer dd {
-  font-size: 12px;
-}
-
-.person-drawer span,
-.person-drawer dt {
-  color: #6b7280;
-  font-weight: 700;
-}
-
-.person-drawer dl {
+.drawer-contact-list div {
   display: grid;
-  gap: 8px;
-  margin: 0;
+  grid-template-columns: 28px 1fr;
+  align-items: center;
+  gap: 10px;
+  font-size: 14px;
 }
 
-.person-drawer dd {
-  margin: 2px 0 0;
+.drawer-contact-list svg,
+.drawer-edit-fields svg {
+  color: #176b91;
+  fill: currentColor;
 }
 
-.drawer-field {
+.drawer-bio {
   display: grid;
-  gap: 6px;
-  font-size: 12px;
-  font-weight: 700;
+  gap: 4px;
+  width: min(270px, 100%);
+  justify-self: center;
 }
 
-.drawer-field input {
-  min-height: 34px;
-  border: 1px solid #9ab7c8;
+.drawer-bio p {
+  margin: 0;
+  font-size: 16px;
+  line-height: 1.55;
+}
+
+.drawer-bio button {
+  width: max-content;
+  border: 0;
+  background: transparent;
+  color: #176b91;
+  padding: 0;
+  text-decoration: underline;
+  font-size: 16px;
+}
+
+.drawer-action-stack {
+  display: grid;
+  gap: 14px;
+  width: min(280px, 100%);
+  justify-self: center;
+}
+
+.drawer-action-stack button,
+.primary-action {
+  min-height: 54px;
+  border: 0;
   border-radius: 4px;
+  background: #0d3b52;
+  color: #ffffff;
+  font-weight: 800;
+}
+
+.add-to-leads-button {
+  width: min(280px, 100%);
+  min-height: 56px;
+  justify-self: center;
+  border: 2px solid #0d3b52;
+  border-radius: 5px;
+  background: #eef3f6;
+  color: #0d3b52;
+  font-size: 18px;
+  font-weight: 800;
+}
+
+.account-manager-card {
+  display: grid;
+  grid-template-columns: 42px 1fr 34px;
+  align-items: center;
+  gap: 10px;
+  width: min(280px, 100%);
+  justify-self: center;
+  border-radius: 6px;
+  background: #f4f6f8;
+  padding: 10px;
+  color: #0d3b52;
+}
+
+.account-manager-card img {
+  width: 42px;
+  height: 42px;
+  border-radius: 999px;
+  object-fit: cover;
+}
+
+.account-manager-card strong,
+.account-manager-card span {
+  display: block;
+}
+
+.account-manager-card strong {
+  font-size: 18px;
+  line-height: 1.1;
+}
+
+.account-manager-card span {
+  margin-top: 3px;
+  color: #6b7280;
+  font-size: 12px;
+  font-style: italic;
+  font-weight: 700;
+}
+
+.account-manager-card svg {
+  justify-self: end;
+  color: #0d3b52;
+  fill: currentColor;
+}
+
+.edit-drawer-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 16px;
+}
+
+.edit-drawer-header h2 {
+  margin: 0;
+  font-size: 26px;
+}
+
+.remove-account-button,
+.secondary-action {
+  min-height: 34px;
+  border: 1.5px solid #176b91;
+  border-radius: 3px;
+  background: #ffffff;
+  color: #176b91;
+  padding: 0 12px;
+  font-weight: 800;
+}
+
+.profile-image-editor {
+  position: relative;
+  display: grid;
+  place-items: center;
+  justify-self: center;
+  width: 184px;
+  height: 184px;
+}
+
+.profile-image-editor img {
+  width: 184px;
+  height: 184px;
+  border-radius: 999px;
+  filter: grayscale(1);
+  object-fit: cover;
+  opacity: 0.72;
+}
+
+.profile-image-editor button {
+  position: absolute;
+  min-height: 38px;
+  border: 0;
+  border-radius: 4px;
+  background: #176b91;
+  color: #ffffff;
+  padding: 0 14px;
+  font-weight: 800;
+}
+
+.drawer-inline-field input {
+  width: 100%;
+  border: 0;
+  background: transparent;
+  text-align: center;
+  font-size: 26px;
+  font-style: italic;
+  outline: 0;
+}
+
+.drawer-inline-field.name-field input {
+  font-size: 28px;
+  font-style: normal;
+  font-weight: 800;
+}
+
+.drawer-edit-fields {
+  display: grid;
+  gap: 10px;
+  width: min(300px, 100%);
+  justify-self: center;
+}
+
+.drawer-edit-fields label {
+  display: grid;
+  grid-template-columns: 34px 1fr;
+  align-items: center;
+  min-height: 40px;
+  border: 1.5px solid #7b7b7b;
+  border-radius: 3px;
   padding: 0 10px;
+}
+
+.drawer-edit-fields input,
+.drawer-edit-fields textarea {
+  min-width: 0;
+  border: 0;
+  background: transparent;
+  color: #525252;
+  font: inherit;
+  outline: 0;
+}
+
+.drawer-edit-fields textarea {
+  min-height: 260px;
+  border: 1.5px solid #7b7b7b;
+  border-radius: 3px;
+  padding: 14px;
+  resize: vertical;
+  line-height: 1.65;
+}
+
+.edit-manager-card {
+  border: 1.5px solid #7b7b7b;
+  background: #ffffff;
+}
+
+.drawer-edit-actions {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 16px;
+  margin-top: 32px;
+}
+
+.drawer-edit-actions button {
+  min-width: 76px;
+  min-height: 38px;
+}
+
+.drawer-edit-actions .primary-action {
+  min-height: 38px;
+  padding: 0 18px;
 }
 
 @media (max-width: 1100px) {

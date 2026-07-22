@@ -10,8 +10,9 @@ import {
   type OnConnectStart,
   type OnNodesChange
 } from "@xyflow/react";
-import { Eye, HelpCircle, Info, List, Pencil, Plus, Search } from "lucide-react";
+import { Eye, HelpCircle, Info, Linkedin, List, Mail, MapPin, Pencil, Phone, Plus, Search, X } from "lucide-react";
 import { useCallback, useEffect, useMemo, useRef, useState, type MouseEvent as ReactMouseEvent } from "react";
+import profilePhoto from "../../assets/profile-photo.jpg";
 import { chartEdges, chartNodes, contacts as seedContacts } from "../../data/seed";
 import type { ChartEdge, Contact } from "../../data/types";
 import { useOrgChartStore } from "../../stores/orgChartStore";
@@ -133,12 +134,14 @@ const findOpenCardPosition = (currentNodes: PersonGraphNode[]) => {
   };
 };
 
+const getContactSlug = (fullName: string) => fullName.toLowerCase().replace(/\s+/g, "");
+const getContactEmailName = (fullName: string) => fullName.toLowerCase().replace(/\s+/g, ".");
+
 export function OrgChartWorkspace() {
   const editMode = useOrgChartStore((state) => state.editMode);
   const query = useOrgChartStore((state) => state.query);
   const selectedPersonId = useOrgChartStore((state) => state.selectedPersonId);
   const hoveredPersonId = useOrgChartStore((state) => state.hoveredPersonId);
-  const draftName = useOrgChartStore((state) => state.draftName);
   const setEditMode = useOrgChartStore((state) => state.setEditMode);
   const setQuery = useOrgChartStore((state) => state.setQuery);
   const setDraftName = useOrgChartStore((state) => state.setDraftName);
@@ -153,8 +156,11 @@ export function OrgChartWorkspace() {
   const nextContactIndexRef = useRef(seedContacts.length + 1);
 
   const normalizedQuery = query.trim().toLowerCase();
-  const activePersonId = hoveredPersonId ?? selectedPersonId;
+  const activePersonId = selectedPersonId ?? hoveredPersonId;
   const selectedContact = contacts.find((contact) => contact.id === activePersonId);
+  const selectedContactBio = selectedContact
+    ? `${selectedContact.fullName} is the ${selectedContact.title.toLowerCase()} for Coca-Cola's enterprise account team, bringing cross-functional experience in stakeholder alignment, account planning, and organizational execution. With a proven track record of improving communication across departments, ${selectedContact.fullName.split(" ")[0]} helps teams identify priorities, remove blockers, and drive relationship momentum across the account.`
+    : "";
 
   const createPlaceholderContact = useCallback((index: number): Contact => {
     const metric = 6 + ((index * 5) % 17);
@@ -487,36 +493,139 @@ export function OrgChartWorkspace() {
           <Controls showInteractive={false} />
         </ReactFlow>
       </div>
-      <aside className={selectedContact ? "person-drawer open" : "person-drawer"} aria-label="Selected person details">
+      <aside
+        className={`${selectedContact ? "person-drawer open" : "person-drawer"} ${editMode ? "edit-drawer" : ""}`}
+        aria-label="Selected person details"
+      >
         {selectedContact ? (
-          <>
-            <div>
-              <span>{selectedContact.department}</span>
-              <h2>{selectedContact.fullName}</h2>
-              <p>{selectedContact.title}</p>
-            </div>
+          <div className="drawer-content">
+            <button
+              aria-label="Close contact details"
+              className="drawer-close"
+              onClick={() => {
+                selectPerson(undefined);
+                setHoveredPerson(undefined);
+              }}
+              type="button"
+            >
+              <X size={24} aria-hidden="true" />
+            </button>
             {editMode ? (
-              <label className="drawer-field">
-                Display name
-                <input
-                  onChange={(event) => setDraftName(event.target.value)}
-                  placeholder={selectedContact.fullName}
-                  value={draftName}
-                />
-              </label>
+              <>
+                <div className="edit-drawer-header">
+                  <h2>Edit Mode</h2>
+                  <button className="remove-account-button" type="button">
+                    Remove Account
+                  </button>
+                </div>
+                <div className="profile-image-editor">
+                  <img alt="" src={profilePhoto} />
+                  <button type="button">Change Profile image</button>
+                </div>
+                <div className="drawer-identity">
+                  <label className="drawer-inline-field">
+                    <span className="sr-only">Title</span>
+                    <input defaultValue={selectedContact.title} />
+                  </label>
+                  <label className="drawer-inline-field name-field">
+                    <span className="sr-only">Name</span>
+                    <input
+                      defaultValue={selectedContact.fullName}
+                      key={selectedContact.id}
+                      onChange={(event) => setDraftName(event.target.value)}
+                      placeholder={selectedContact.fullName}
+                    />
+                  </label>
+                </div>
+                <div className="drawer-edit-fields">
+                  <label>
+                    <Phone size={20} aria-hidden="true" />
+                    <input defaultValue="(555) 123-4567" />
+                  </label>
+                  <label>
+                    <Mail size={20} aria-hidden="true" />
+                    <input defaultValue={`${getContactEmailName(selectedContact.fullName)}@coca-cola.com`} />
+                  </label>
+                  <label>
+                    <Linkedin size={20} aria-hidden="true" />
+                    <input defaultValue={`linkedin.com/in/${getContactSlug(selectedContact.fullName)}`} />
+                  </label>
+                  <label>
+                    <MapPin size={20} aria-hidden="true" />
+                    <input defaultValue={selectedContact.location} />
+                  </label>
+                  <textarea defaultValue={selectedContactBio} />
+                </div>
+                <div className="account-manager-card edit-manager-card">
+                  <img alt="" src={profilePhoto} />
+                  <div>
+                    <strong>Leo Young</strong>
+                    <span>Current AM in Charge</span>
+                  </div>
+                  <Mail size={22} aria-hidden="true" />
+                </div>
+                <div className="drawer-edit-actions">
+                  <button className="secondary-action" type="button">
+                    Cancel
+                  </button>
+                  <button className="primary-action" type="button">
+                    Save
+                  </button>
+                  <button className="primary-action" type="button">
+                    Publish
+                  </button>
+                </div>
+              </>
             ) : (
-              <dl>
-                <div>
-                  <dt>Location</dt>
-                  <dd>{selectedContact.location}</dd>
+              <>
+                <img className="drawer-avatar" alt="" src={profilePhoto} />
+                <div className="drawer-identity">
+                  <p>{selectedContact.title.replace("Chief Executive Officer", "CEO")}</p>
+                  <h2>{selectedContact.fullName}</h2>
                 </div>
-                <div>
-                  <dt>Relationship</dt>
-                  <dd>{selectedContact.relationshipTags.join(", ") || "Unclassified"}</dd>
+                <div className="drawer-contact-list">
+                  <div>
+                    <Phone size={20} aria-hidden="true" />
+                    <span>(555) 123-4567</span>
+                  </div>
+                  <div>
+                    <Mail size={20} aria-hidden="true" />
+                    <span>{getContactEmailName(selectedContact.fullName)}@coca-cola.com</span>
+                  </div>
+                  <div>
+                    <Linkedin size={20} aria-hidden="true" />
+                    <span>linkedin.com/in/{getContactSlug(selectedContact.fullName)}</span>
+                  </div>
+                  <div>
+                    <MapPin size={20} aria-hidden="true" />
+                    <span>{selectedContact.location}</span>
+                  </div>
                 </div>
-              </dl>
+                <div className="drawer-bio">
+                  <p>{selectedContactBio.slice(0, 230)}...</p>
+                  <button type="button">see more</button>
+                </div>
+                <div className="drawer-action-stack">
+                  <button type="button">View Activity Timeline</button>
+                  <button type="button">View Contract Placements</button>
+                  <button type="button">View Similar Contracts</button>
+                </div>
+                {selectedContact.cardVariant === "grey" ? (
+                  <button className="add-to-leads-button" type="button">
+                    Add to Leads
+                  </button>
+                ) : null}
+                <div className="account-manager-card">
+                  <img alt="" src={profilePhoto} />
+                  <div>
+                    <strong>Leo Young</strong>
+                    <span>Current AM in Charge</span>
+                  </div>
+                  <Mail size={22} aria-hidden="true" />
+                </div>
+              </>
             )}
-          </>
+          </div>
         ) : (
           <p>Select a person card to inspect account relationships.</p>
         )}
