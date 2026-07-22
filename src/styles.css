@@ -782,6 +782,11 @@ button {
   font-weight: 800;
 }
 
+.drawer-content > .add-to-leads-button,
+.drawer-content > .account-manager-card {
+  margin-top: auto;
+}
+
 .account-manager-card {
   display: grid;
   grid-template-columns: 36px 1fr 30px;

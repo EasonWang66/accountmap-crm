@@ -579,9 +579,6 @@ export function OrgChartWorkspace() {
                   <button className="primary-action" type="button">
                     Save
                   </button>
-                  <button className="primary-action" type="button">
-                    Publish
-                  </button>
                 </div>
               </>
             ) : (
