@@ -1,6 +1,15 @@
-import { Background, Controls, ReactFlow, useNodesState, type Edge, type OnNodesChange } from "@xyflow/react";
+import {
+  Background,
+  ConnectionMode,
+  Controls,
+  ReactFlow,
+  useNodesState,
+  type Edge,
+  type OnConnect,
+  type OnNodesChange
+} from "@xyflow/react";
 import { Eye, HelpCircle, Info, List, Pencil, Plus, Search } from "lucide-react";
-import { useCallback, useEffect, useMemo, useRef, useState } from "react";
+import { useCallback, useEffect, useMemo, useRef, useState, type MouseEvent } from "react";
 import { chartEdges, chartNodes, contacts as seedContacts } from "../../data/seed";
 import type { ChartEdge, Contact } from "../../data/types";
 import { useOrgChartStore } from "../../stores/orgChartStore";
@@ -163,6 +172,47 @@ export function OrgChartWorkspace() {
     ]
   );
 
+  const connectContactNodes = useCallback<OnConnect>(
+    (connection) => {
+      if (!editMode || !connection.source || !connection.target || connection.source === connection.target) {
+        return;
+      }
+
+      setChartRelationshipEdges((currentEdges) => {
+        const alreadyConnected = currentEdges.some(
+          (edge) => edge.sourceNodeId === connection.source && edge.targetNodeId === connection.target
+        );
+
+        if (alreadyConnected) {
+          return currentEdges;
+        }
+
+        return [
+          ...currentEdges,
+          {
+            id: `edge-${connection.source}-${connection.target}-${Date.now()}`,
+            sourceNodeId: connection.source,
+            targetNodeId: connection.target,
+            relationshipType: "reports-to"
+          }
+        ];
+      });
+    },
+    [editMode]
+  );
+
+  const deleteRelationshipEdge = useCallback(
+    (event, edge) => {
+      if (!editMode) {
+        return;
+      }
+
+      event.stopPropagation();
+      setChartRelationshipEdges((currentEdges) => currentEdges.filter((chartEdge) => chartEdge.id !== edge.id));
+    },
+    [editMode]
+  ) as (event: MouseEvent, edge: Edge) => void;
+
   const leafNodeIds = useMemo(() => {
     const sourceNodeIds = new Set(chartRelationshipEdges.map((edge) => edge.sourceNodeId));
 
@@ -225,6 +275,7 @@ export function OrgChartWorkspace() {
         id: edge.id,
         source: edge.sourceNodeId,
         target: edge.targetNodeId,
+        className: editMode ? "editable-chart-edge" : undefined,
         type: "smoothstep",
         animated: editMode,
         pathOptions: { borderRadius: 24 },
@@ -299,6 +350,7 @@ export function OrgChartWorkspace() {
       </div>
       <div className={editMode ? "flow-frame editing" : "flow-frame"}>
         <ReactFlow
+          connectionMode={ConnectionMode.Loose}
           edges={edges}
           fitView
           fitViewOptions={{ padding: 0.2 }}
@@ -307,6 +359,8 @@ export function OrgChartWorkspace() {
           nodes={flowNodes}
           nodeTypes={nodeTypes}
           nodesDraggable
+          onConnect={connectContactNodes}
+          onEdgeClick={deleteRelationshipEdge}
           onNodesChange={onNodesChange as OnNodesChange<ChartFlowNode>}
           panOnScroll
           proOptions={{ hideAttribution: true }}

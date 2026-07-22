@@ -37,10 +37,12 @@ function LinkedinGlyph() {
 
 export function PersonNode({ data, id }: NodeProps<PersonGraphNode>) {
   const hoveredPersonId = useOrgChartStore((state) => state.hoveredPersonId);
+  const selectedPersonId = useOrgChartStore((state) => state.selectedPersonId);
   const editMode = useOrgChartStore((state) => state.editMode);
   const setHoveredPerson = useOrgChartStore((state) => state.setHoveredPerson);
   const selectPerson = useOrgChartStore((state) => state.selectPerson);
   const isActive = hoveredPersonId === data.contact.id;
+  const showConnectionHandles = editMode && selectedPersonId === data.contact.id;
 
   return (
     <button
@@ -53,6 +55,66 @@ export function PersonNode({ data, id }: NodeProps<PersonGraphNode>) {
       type="button"
     >
       <Handle className="node-handle" position={Position.Top} type="target" />
+      {editMode ? (
+        <>
+          <Handle
+            className="edit-target-handle top"
+            id="target-top"
+            isConnectable={editMode}
+            position={Position.Top}
+            type="target"
+          />
+          <Handle
+            className="edit-target-handle right"
+            id="target-right"
+            isConnectable={editMode}
+            position={Position.Right}
+            type="target"
+          />
+          <Handle
+            className="edit-target-handle bottom"
+            id="target-bottom"
+            isConnectable={editMode}
+            position={Position.Bottom}
+            type="target"
+          />
+          <Handle
+            className="edit-target-handle left"
+            id="target-left"
+            isConnectable={editMode}
+            position={Position.Left}
+            type="target"
+          />
+          <Handle
+            className={showConnectionHandles ? "edit-connection-handle top" : "edit-connection-handle hidden"}
+            id="edit-top"
+            isConnectable={showConnectionHandles}
+            position={Position.Top}
+            type="source"
+          />
+          <Handle
+            className={showConnectionHandles ? "edit-connection-handle right" : "edit-connection-handle hidden"}
+            id="edit-right"
+            isConnectable={showConnectionHandles}
+            position={Position.Right}
+            type="source"
+          />
+          <Handle
+            className={showConnectionHandles ? "edit-connection-handle bottom" : "edit-connection-handle hidden"}
+            id="edit-bottom"
+            isConnectable={showConnectionHandles}
+            position={Position.Bottom}
+            type="source"
+          />
+          <Handle
+            className={showConnectionHandles ? "edit-connection-handle left" : "edit-connection-handle hidden"}
+            id="edit-left"
+            isConnectable={showConnectionHandles}
+            position={Position.Left}
+            type="source"
+          />
+        </>
+      ) : null}
       {editMode ? (
         <span
           className="edit-remove-indicator nodrag nopan"

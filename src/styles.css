@@ -411,6 +411,20 @@ button {
   stroke-linejoin: round;
 }
 
+.flow-frame.editing .editable-chart-edge {
+  cursor: pointer;
+}
+
+.flow-frame.editing .editable-chart-edge:hover .react-flow__edge-path {
+  stroke: #eb3b4b !important;
+  stroke-width: 2.6 !important;
+}
+
+.flow-frame.editing .react-flow__connection-path {
+  stroke: #129fe3;
+  stroke-width: 2.5;
+}
+
 .flow-frame.editing {
   outline: 2px solid #176b91;
   outline-offset: 2px;
@@ -478,6 +492,59 @@ button {
   font-weight: 800;
   line-height: 1;
   box-shadow: 0 1px 2px rgb(0 0 0 / 12%);
+}
+
+.edit-target-handle,
+.edit-connection-handle {
+  width: 26px;
+  height: 26px;
+  min-width: 26px;
+  min-height: 26px;
+  border-radius: 999px;
+}
+
+.edit-target-handle {
+  z-index: 3;
+  border: 0;
+  background: transparent;
+  opacity: 0;
+}
+
+.edit-connection-handle {
+  z-index: 5;
+  border: 2px solid #129fe3;
+  background: #129fe3;
+  opacity: 1;
+  box-shadow: 0 1px 4px rgb(18 159 227 / 28%);
+}
+
+.edit-connection-handle.hidden {
+  width: 1px;
+  height: 1px;
+  min-width: 1px;
+  min-height: 1px;
+  opacity: 0;
+  pointer-events: none;
+}
+
+.edit-target-handle.top,
+.edit-connection-handle.top {
+  top: -14px;
+}
+
+.edit-target-handle.right,
+.edit-connection-handle.right {
+  right: -14px;
+}
+
+.edit-target-handle.bottom,
+.edit-connection-handle.bottom {
+  bottom: -14px;
+}
+
+.edit-target-handle.left,
+.edit-connection-handle.left {
+  left: -14px;
 }
 
 .person-tags {
