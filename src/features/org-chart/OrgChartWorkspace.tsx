@@ -57,6 +57,11 @@ type VersionHistoryMonth = {
   entries: VersionHistoryEntry[];
   month: string;
 };
+type FilterOption = {
+  id: string;
+  label: string;
+  matches: (contact: Contact) => boolean;
+};
 
 const CARD_WIDTH = 124;
 const CARD_HEIGHT = 88;
@@ -189,6 +194,17 @@ const versionHistory: VersionHistoryMonth[] = [
     ]
   }
 ];
+const filterOptions: FilterOption[] = [
+  { id: "department-executive", label: "Executive Dept.", matches: (contact) => contact.department === "Executive" },
+  { id: "department-operations", label: "Operations Dept.", matches: (contact) => contact.department === "Operations" },
+  { id: "department-finance", label: "Finance Dept.", matches: (contact) => contact.department === "Finance" },
+  { id: "department-technology", label: "Technology Dept.", matches: (contact) => contact.department === "Technology" },
+  { id: "department-sales", label: "Sales Dept.", matches: (contact) => contact.department === "Sales" },
+  { id: "department-people", label: "People Dept.", matches: (contact) => contact.department === "People" },
+  { id: "am-in-charge", label: "AM in charge?", matches: (contact) => contact.cardVariant === "blue" },
+  { id: "no-am-in-charge", label: "No AM in charge?", matches: (contact) => contact.cardVariant === "grey" },
+  { id: "open-reqs", label: "Open Reqs Available", matches: (contact) => Boolean(contact.cardMetric) }
+];
 
 export function OrgChartWorkspace() {
   const editMode = useOrgChartStore((state) => state.editMode);
@@ -208,6 +224,8 @@ export function OrgChartWorkspace() {
   const [versionPanelOpen, setVersionPanelOpen] = useState(false);
   const [contactListPanelOpen, setContactListPanelOpen] = useState(false);
   const [contactListQuery, setContactListQuery] = useState("");
+  const [filterPanelOpen, setFilterPanelOpen] = useState(false);
+  const [activeFilterIds, setActiveFilterIds] = useState<string[]>([]);
   const pendingConnectionRef = useRef<PendingConnection | undefined>(undefined);
   const nextContactIndexRef = useRef(seedContacts.length + 1);
 
@@ -274,6 +292,18 @@ export function OrgChartWorkspace() {
         .includes(normalizedListQuery)
     );
   }, [contactListQuery, visibleChartContacts]);
+  const selectedFilters = useMemo(
+    () => filterOptions.filter((option) => activeFilterIds.includes(option.id)),
+    [activeFilterIds]
+  );
+  const showAllContacts = activeFilterIds.length === 0;
+  const toggleFilter = useCallback((filterId: string) => {
+    setActiveFilterIds((currentFilterIds) =>
+      currentFilterIds.includes(filterId)
+        ? currentFilterIds.filter((currentFilterId) => currentFilterId !== filterId)
+        : [...currentFilterIds, filterId]
+    );
+  }, []);
 
   const deleteContactNode = useCallback(
     (nodeId: string) => {
@@ -447,9 +477,16 @@ export function OrgChartWorkspace() {
   );
 
   const flowNodes = useMemo<ChartFlowNode[]>(
-    () => personFlowNodes,
-    [personFlowNodes]
+    () => {
+      if (selectedFilters.length === 0) {
+        return personFlowNodes;
+      }
+
+      return personFlowNodes.filter((node) => selectedFilters.some((filter) => filter.matches(node.data.contact)));
+    },
+    [personFlowNodes, selectedFilters]
   );
+  const visibleNodeIds = useMemo(() => new Set(flowNodes.map((node) => node.id)), [flowNodes]);
 
   useEffect(() => {
     setNodes((currentNodes) =>
@@ -475,22 +512,24 @@ export function OrgChartWorkspace() {
 
   const edges = useMemo<Edge[]>(
     () => {
-      const hierarchyEdges = chartRelationshipEdges.map((edge) => ({
-        id: edge.id,
-        source: edge.sourceNodeId,
-        sourceHandle: "hierarchy-bottom",
-        target: edge.targetNodeId,
-        targetHandle: "hierarchy-top",
-        className: editMode ? "editable-chart-edge" : undefined,
-        type: "smoothstep",
-        animated: editMode,
-        pathOptions: { borderRadius: 24 },
-        style: { stroke: "#a8b3bd", strokeWidth: 1.6 }
-      }));
+      const hierarchyEdges = chartRelationshipEdges
+        .filter((edge) => visibleNodeIds.has(edge.sourceNodeId) && visibleNodeIds.has(edge.targetNodeId))
+        .map((edge) => ({
+          id: edge.id,
+          source: edge.sourceNodeId,
+          sourceHandle: "hierarchy-bottom",
+          target: edge.targetNodeId,
+          targetHandle: "hierarchy-top",
+          className: editMode ? "editable-chart-edge" : undefined,
+          type: "smoothstep",
+          animated: editMode,
+          pathOptions: { borderRadius: 24 },
+          style: { stroke: "#a8b3bd", strokeWidth: 1.6 }
+        }));
 
       return hierarchyEdges;
     },
-    [chartRelationshipEdges, editMode]
+    [chartRelationshipEdges, editMode, visibleNodeIds]
   );
 
   return (
@@ -506,11 +545,12 @@ export function OrgChartWorkspace() {
             {editMode ? "Save Changes" : "Edit"}
           </button>
           <button
-            className="icon-button"
+            className={versionPanelOpen ? "icon-button active" : "icon-button"}
             aria-label="Version history"
             onClick={() => {
               setVersionPanelOpen(true);
               setContactListPanelOpen(false);
+              setFilterPanelOpen(false);
               selectPerson(undefined);
               setHoveredPerson(undefined);
             }}
@@ -525,11 +565,12 @@ export function OrgChartWorkspace() {
             </button>
           ) : null}
           <button
-            className="icon-button"
+            className={contactListPanelOpen ? "icon-button active" : "icon-button"}
             aria-label="All contacts"
             onClick={() => {
               setContactListPanelOpen(true);
               setVersionPanelOpen(false);
+              setFilterPanelOpen(false);
               selectPerson(undefined);
               setHoveredPerson(undefined);
             }}
@@ -537,9 +578,47 @@ export function OrgChartWorkspace() {
           >
             <List size={15} />
           </button>
-          <button className="icon-button" aria-label="Preview visibility" disabled={editMode} type="button">
-            <Eye size={15} />
-          </button>
+          <div className="filter-tool">
+            <button
+              className={filterPanelOpen || !showAllContacts ? "icon-button active" : "icon-button"}
+              aria-expanded={filterPanelOpen}
+              aria-label="Show or hide contacts"
+              onClick={() => {
+                setFilterPanelOpen((isOpen) => !isOpen);
+                setVersionPanelOpen(false);
+                setContactListPanelOpen(false);
+                selectPerson(undefined);
+                setHoveredPerson(undefined);
+              }}
+              type="button"
+            >
+              <Eye size={17} />
+            </button>
+            {filterPanelOpen ? (
+              <div className="filter-popover">
+                <div className="filter-popover-header">
+                  <h2>Show/Hide</h2>
+                  <button onClick={() => setActiveFilterIds([])} type="button">
+                    Clear all
+                  </button>
+                </div>
+                <label className="filter-option">
+                  <span>Show all</span>
+                  <input checked={showAllContacts} onChange={() => setActiveFilterIds([])} type="checkbox" />
+                </label>
+                {filterOptions.map((option) => (
+                  <label className="filter-option" key={option.id}>
+                    <span>{option.label}</span>
+                    <input
+                      checked={activeFilterIds.includes(option.id)}
+                      onChange={() => toggleFilter(option.id)}
+                      type="checkbox"
+                    />
+                  </label>
+                ))}
+              </div>
+            ) : null}
+          </div>
           <label className="search-field">
             <span className="sr-only">Search people</span>
             <input
