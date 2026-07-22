@@ -430,30 +430,6 @@ button {
   outline-offset: 2px;
 }
 
-.pan-tool-panel {
-  margin: 0 0 82px 0;
-}
-
-.pan-tool-button {
-  display: grid;
-  place-items: center;
-  width: 26px;
-  height: 26px;
-  border: 1px solid #d3dbe1;
-  border-radius: 2px;
-  background: #ffffff;
-  color: #60717e;
-  box-shadow: 0 0 2px 1px rgb(0 0 0 / 8%);
-}
-
-.pan-tool-button:hover,
-.pan-tool-button:focus-visible,
-.pan-tool-button.active {
-  border-color: #176b91;
-  background: #176b91;
-  color: #ffffff;
-}
-
 .node-handle,
 .react-flow__handle {
   width: 1px;
@@ -665,6 +641,8 @@ button {
 }
 
 .add-card-node {
+  position: relative;
+  z-index: 8;
   display: grid;
   place-items: center;
   width: 124px;

@@ -4,6 +4,7 @@ import { useOrgChartStore } from "../../stores/orgChartStore";
 
 export type PersonNodeData = {
   [key: string]: unknown;
+  connectedSides?: Record<"top" | "right" | "bottom" | "left", boolean>;
   contact: Contact;
   matched: boolean;
   onDeleteContact: (nodeId: string) => void;
@@ -43,6 +44,12 @@ export function PersonNode({ data, id }: NodeProps<PersonGraphNode>) {
   const selectPerson = useOrgChartStore((state) => state.selectPerson);
   const isActive = hoveredPersonId === data.contact.id;
   const showConnectionHandles = editMode && selectedPersonId === data.contact.id;
+  const connectedSides = data.connectedSides ?? {
+    bottom: false,
+    left: false,
+    right: false,
+    top: false
+  };
 
   return (
     <button
@@ -60,72 +67,72 @@ export function PersonNode({ data, id }: NodeProps<PersonGraphNode>) {
           <Handle
             className="edit-target-handle nodrag nopan top"
             id="target-top"
-            isConnectable={editMode}
+            isConnectable={editMode && !connectedSides.top}
             position={Position.Top}
             type="target"
           />
           <Handle
             className="edit-target-handle nodrag nopan right"
             id="target-right"
-            isConnectable={editMode}
+            isConnectable={editMode && !connectedSides.right}
             position={Position.Right}
             type="target"
           />
           <Handle
             className="edit-target-handle nodrag nopan bottom"
             id="target-bottom"
-            isConnectable={editMode}
+            isConnectable={editMode && !connectedSides.bottom}
             position={Position.Bottom}
             type="target"
           />
           <Handle
             className="edit-target-handle nodrag nopan left"
             id="target-left"
-            isConnectable={editMode}
+            isConnectable={editMode && !connectedSides.left}
             position={Position.Left}
             type="target"
           />
           <Handle
             className={
-              showConnectionHandles
+              showConnectionHandles && !connectedSides.top
                 ? "edit-connection-handle nodrag nopan top"
                 : "edit-connection-handle nodrag nopan hidden"
             }
             id="edit-top"
-            isConnectable={showConnectionHandles}
+            isConnectable={showConnectionHandles && !connectedSides.top}
             position={Position.Top}
             type="source"
           />
           <Handle
             className={
-              showConnectionHandles
+              showConnectionHandles && !connectedSides.right
                 ? "edit-connection-handle nodrag nopan right"
                 : "edit-connection-handle nodrag nopan hidden"
             }
             id="edit-right"
-            isConnectable={showConnectionHandles}
+            isConnectable={showConnectionHandles && !connectedSides.right}
             position={Position.Right}
             type="source"
           />
           <Handle
             className={
-              showConnectionHandles
+              showConnectionHandles && !connectedSides.bottom
                 ? "edit-connection-handle nodrag nopan bottom"
                 : "edit-connection-handle nodrag nopan hidden"
             }
             id="edit-bottom"
-            isConnectable={showConnectionHandles}
+            isConnectable={showConnectionHandles && !connectedSides.bottom}
             position={Position.Bottom}
             type="source"
           />
           <Handle
             className={
-              showConnectionHandles
+              showConnectionHandles && !connectedSides.left
                 ? "edit-connection-handle nodrag nopan left"
                 : "edit-connection-handle nodrag nopan hidden"
             }
             id="edit-left"
-            isConnectable={showConnectionHandles}
+            isConnectable={showConnectionHandles && !connectedSides.left}
             position={Position.Left}
             type="source"
           />

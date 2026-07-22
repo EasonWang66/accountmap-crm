@@ -2,14 +2,13 @@ import {
   Background,
   ConnectionMode,
   Controls,
-  Panel,
   ReactFlow,
   useNodesState,
   type Edge,
   type OnConnect,
   type OnNodesChange
 } from "@xyflow/react";
-import { Eye, Hand, HelpCircle, Info, List, Pencil, Plus, Search } from "lucide-react";
+import { Eye, HelpCircle, Info, List, Pencil, Plus, Search } from "lucide-react";
 import { useCallback, useEffect, useMemo, useRef, useState, type MouseEvent } from "react";
 import { chartEdges, chartNodes, contacts as seedContacts } from "../../data/seed";
 import type { ChartEdge, Contact } from "../../data/types";
@@ -23,6 +22,26 @@ const nodeTypes = {
 };
 
 type ChartFlowNode = PersonGraphNode | AddCardGraphNode;
+type ConnectionSide = "top" | "right" | "bottom" | "left";
+type ConnectedSides = Record<ConnectionSide, boolean>;
+
+const emptyConnectedSides = (): ConnectedSides => ({
+  bottom: false,
+  left: false,
+  right: false,
+  top: false
+});
+
+const getConnectionSide = (node: PersonGraphNode, connectedNode: PersonGraphNode): ConnectionSide => {
+  const xDistance = connectedNode.position.x - node.position.x;
+  const yDistance = connectedNode.position.y - node.position.y;
+
+  if (Math.abs(xDistance) > Math.abs(yDistance)) {
+    return xDistance > 0 ? "right" : "left";
+  }
+
+  return yDistance > 0 ? "bottom" : "top";
+};
 
 export function OrgChartWorkspace() {
   const editMode = useOrgChartStore((state) => state.editMode);
@@ -38,7 +57,6 @@ export function OrgChartWorkspace() {
 
   const [contacts, setContacts] = useState<Contact[]>(seedContacts);
   const [chartRelationshipEdges, setChartRelationshipEdges] = useState<ChartEdge[]>(chartEdges);
-  const [handToolEnabled, setHandToolEnabled] = useState(false);
   const nextContactIndexRef = useRef(seedContacts.length + 1);
 
   const normalizedQuery = query.trim().toLowerCase();
@@ -244,18 +262,41 @@ export function OrgChartWorkspace() {
     [addContactUnderNode, editMode, leafNodeIds, nodes]
   );
 
-  const flowNodes = useMemo<ChartFlowNode[]>(
-    () => (editMode ? [...nodes, ...addCardNodes] : nodes),
-    [addCardNodes, editMode, nodes]
+  const connectedSideMap = useMemo(() => {
+    const nodeMap = new Map(nodes.map((node) => [node.id, node]));
+    const sideMap = new Map(nodes.map((node) => [node.id, emptyConnectedSides()]));
+
+    chartRelationshipEdges.forEach((edge) => {
+      const sourceNode = nodeMap.get(edge.sourceNodeId);
+      const targetNode = nodeMap.get(edge.targetNodeId);
+
+      if (!sourceNode || !targetNode) {
+        return;
+      }
+
+      sideMap.get(sourceNode.id)![getConnectionSide(sourceNode, targetNode)] = true;
+      sideMap.get(targetNode.id)![getConnectionSide(targetNode, sourceNode)] = true;
+    });
+
+    return sideMap;
+  }, [chartRelationshipEdges, nodes]);
+
+  const personFlowNodes = useMemo<PersonGraphNode[]>(
+    () =>
+      nodes.map((node) => ({
+        ...node,
+        data: {
+          ...node.data,
+          connectedSides: connectedSideMap.get(node.id) ?? emptyConnectedSides()
+        }
+      })),
+    [connectedSideMap, nodes]
   );
 
-  const canvasPanEnabled = editMode ? handToolEnabled : true;
-
-  useEffect(() => {
-    if (!editMode) {
-      setHandToolEnabled(false);
-    }
-  }, [editMode]);
+  const flowNodes = useMemo<ChartFlowNode[]>(
+    () => (editMode ? [...personFlowNodes, ...addCardNodes] : personFlowNodes),
+    [addCardNodes, editMode, personFlowNodes]
+  );
 
   useEffect(() => {
     setNodes((currentNodes) =>
@@ -369,27 +410,15 @@ export function OrgChartWorkspace() {
           nodes={flowNodes}
           nodeTypes={nodeTypes}
           nodesDraggable
+          nodesConnectable={editMode}
           onConnect={connectContactNodes}
           onEdgeClick={deleteRelationshipEdge}
           onNodesChange={onNodesChange as OnNodesChange<ChartFlowNode>}
-          panOnDrag={canvasPanEnabled}
-          panOnScroll={canvasPanEnabled}
+          panOnDrag={editMode ? [1] : true}
+          panOnScroll={!editMode}
           proOptions={{ hideAttribution: true }}
         >
           <Background color="#d7dee4" gap={22} />
-          {editMode ? (
-            <Panel className="pan-tool-panel" position="bottom-left">
-              <button
-                aria-pressed={handToolEnabled}
-                className={handToolEnabled ? "pan-tool-button active" : "pan-tool-button"}
-                onClick={() => setHandToolEnabled((enabled) => !enabled)}
-                title="Move chart"
-                type="button"
-              >
-                <Hand size={15} aria-hidden="true" />
-              </button>
-            </Panel>
-          ) : null}
           <Controls showInteractive={false} />
         </ReactFlow>
       </div>

@@ -1,4 +1,4 @@
-import { Handle, Position, type Node, type NodeProps } from "@xyflow/react";
+import { type Node, type NodeProps } from "@xyflow/react";
 import { useRef } from "react";
 
 export type AddCardNodeData = {
@@ -29,7 +29,14 @@ export function AddCardNode({ data }: NodeProps<AddCardGraphNode>) {
       type="button"
       aria-label="Add person under this column"
       onClick={(event) => {
+        event.preventDefault();
         event.stopPropagation();
+        addContact();
+      }}
+      onMouseDownCapture={(event) => {
+        event.preventDefault();
+        event.stopPropagation();
+        addContact();
       }}
       onPointerDownCapture={(event) => {
         event.preventDefault();
@@ -44,7 +51,6 @@ export function AddCardNode({ data }: NodeProps<AddCardGraphNode>) {
         }
       }}
     >
-      <Handle className="node-handle" position={Position.Top} type="target" />
       <span aria-hidden="true">+</span>
     </button>
   );
