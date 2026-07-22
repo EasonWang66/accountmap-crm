@@ -302,6 +302,7 @@ button {
 }
 
 .primary-button,
+.save-button,
 .secondary-button,
 .icon-button {
   display: inline-flex;
@@ -316,6 +317,7 @@ button {
 }
 
 .primary-button,
+.save-button,
 .icon-button {
   background: #176b91;
   color: white;
@@ -326,8 +328,25 @@ button {
   padding: 0 12px;
 }
 
+.save-button {
+  min-width: 136px;
+  padding: 0 14px;
+  border-color: #176b91;
+  font-size: 14px;
+}
+
 .primary-button.active {
   background: #0d3b52;
+}
+
+.primary-button:disabled,
+.secondary-button:disabled,
+.icon-button:disabled {
+  border-color: #b9b9b9;
+  background: #b9b9b9;
+  color: white;
+  cursor: not-allowed;
+  opacity: 1;
 }
 
 .secondary-button {
@@ -360,6 +379,17 @@ button {
   padding: 0 8px;
   outline: 0;
   font-size: 12px;
+}
+
+.search-field.disabled {
+  border-color: #b9b9b9;
+  background: #f0f1f2;
+  color: #a1a1a1;
+}
+
+.search-field.disabled input {
+  color: #8a8a8a;
+  cursor: not-allowed;
 }
 
 .flow-frame {
@@ -422,6 +452,24 @@ button {
 .person-node:focus-visible {
   outline: 2px solid #0d3b52;
   outline-offset: 2px;
+}
+
+.edit-remove-indicator {
+  position: absolute;
+  top: -13px;
+  left: -13px;
+  z-index: 2;
+  display: grid;
+  place-items: center;
+  width: 24px;
+  height: 24px;
+  border-radius: 999px;
+  background: #eb3b4b;
+  color: white;
+  font-size: 18px;
+  font-weight: 800;
+  line-height: 1;
+  box-shadow: 0 1px 2px rgb(0 0 0 / 12%);
 }
 
 .person-tags {
@@ -503,6 +551,24 @@ button {
   width: 11px;
   height: 11px;
   fill: currentColor;
+}
+
+.add-card-node {
+  display: grid;
+  place-items: center;
+  width: 124px;
+  height: 76px;
+  border: 2px solid #d0d0d0;
+  border-radius: 5px;
+  background: #f7f7f7;
+  color: #9a9a9a;
+  box-shadow: none;
+}
+
+.add-card-node span {
+  font-size: 34px;
+  font-weight: 300;
+  line-height: 1;
 }
 
 .person-drawer {

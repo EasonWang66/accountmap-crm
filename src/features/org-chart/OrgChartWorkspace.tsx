@@ -1,13 +1,17 @@
-import { Background, Controls, ReactFlow, useNodesState, type Edge } from "@xyflow/react";
+import { Background, Controls, ReactFlow, useNodesState, type Edge, type OnNodesChange } from "@xyflow/react";
 import { Eye, HelpCircle, Info, List, Pencil, Search } from "lucide-react";
 import { useEffect, useMemo } from "react";
 import { chartEdges, chartNodes, contacts } from "../../data/seed";
 import { useOrgChartStore } from "../../stores/orgChartStore";
+import { AddCardNode, type AddCardGraphNode } from "./AddCardNode";
 import { PersonNode, type PersonGraphNode } from "./PersonNode";
 
 const nodeTypes = {
+  addCard: AddCardNode,
   person: PersonNode
 };
+
+type ChartFlowNode = PersonGraphNode | AddCardGraphNode;
 
 export function OrgChartWorkspace() {
   const editMode = useOrgChartStore((state) => state.editMode);
@@ -47,6 +51,39 @@ export function OrgChartWorkspace() {
 
   const [nodes, setNodes, onNodesChange] = useNodesState<PersonGraphNode>(initialNodes);
 
+  const leafNodeIds = useMemo(() => {
+    const sourceNodeIds = new Set(chartEdges.map((edge) => edge.sourceNodeId));
+
+    return new Set(nodes.filter((node) => !sourceNodeIds.has(node.id)).map((node) => node.id));
+  }, [nodes]);
+
+  const addCardNodes = useMemo<AddCardGraphNode[]>(
+    () =>
+      editMode
+        ? nodes
+            .filter((node) => leafNodeIds.has(node.id))
+            .map((node) => ({
+              id: `add-${node.id}`,
+              type: "addCard",
+              draggable: false,
+              selectable: false,
+              position: {
+                x: node.position.x,
+                y: node.position.y + 142
+              },
+              data: {
+                parentNodeId: node.id
+              }
+            }))
+        : [],
+    [editMode, leafNodeIds, nodes]
+  );
+
+  const flowNodes = useMemo<ChartFlowNode[]>(
+    () => (editMode ? [...nodes, ...addCardNodes] : nodes),
+    [addCardNodes, editMode, nodes]
+  );
+
   useEffect(() => {
     setNodes((currentNodes) =>
       currentNodes.map((node) => {
@@ -69,39 +106,59 @@ export function OrgChartWorkspace() {
   }, [normalizedQuery, setNodes]);
 
   const edges = useMemo<Edge[]>(
-    () =>
-      chartEdges.map((edge) => ({
+    () => {
+      const hierarchyEdges = chartEdges.map((edge) => ({
         id: edge.id,
         source: edge.sourceNodeId,
         target: edge.targetNodeId,
         type: "smoothstep",
         animated: editMode,
         pathOptions: { borderRadius: 24 },
-        style: { stroke: "#a8b3bd", strokeLinecap: "round", strokeLinejoin: "round", strokeWidth: 1.6 }
-      })),
-    [editMode]
+        style: { stroke: "#a8b3bd", strokeWidth: 1.6 }
+      }));
+
+      const addEdges = addCardNodes.map((node) => ({
+        id: `edge-${node.data.parentNodeId}-${node.id}`,
+        source: node.data.parentNodeId,
+        target: node.id,
+        type: "smoothstep",
+        style: {
+          stroke: "#a8a8a8",
+          strokeDasharray: "3 5",
+          strokeWidth: 1.5
+        }
+      }));
+
+      return [...hierarchyEdges, ...addEdges];
+    },
+    [addCardNodes, editMode]
   );
 
   return (
     <section className="chart-panel" aria-label="Organizational chart workspace">
       <div className="chart-toolbar">
         <div className="toolbar-left">
-          <button className={editMode ? "primary-button active" : "primary-button"} onClick={() => setEditMode(!editMode)}>
-            <Pencil size={15} aria-hidden="true" />
-            Edit
+          <button
+            className={editMode ? "save-button" : "primary-button"}
+            onClick={() => setEditMode(!editMode)}
+            type="button"
+          >
+            {editMode ? null : <Pencil size={15} aria-hidden="true" />}
+            {editMode ? "Save Changes" : "Edit"}
           </button>
-          <button className="icon-button" aria-label="Recent changes">
+          <button className="icon-button" aria-label="Recent changes" disabled={editMode} type="button">
             <HelpCircle size={15} />
           </button>
-          <button className="icon-button" aria-label="List view">
+          <button className="icon-button" aria-label="List view" disabled={editMode} type="button">
             <List size={15} />
           </button>
-          <button className="icon-button" aria-label="Preview visibility">
+          <button className="icon-button" aria-label="Preview visibility" disabled={editMode} type="button">
             <Eye size={15} />
           </button>
-          <label className="search-field">
+          <label className={editMode ? "search-field disabled" : "search-field"}>
             <span className="sr-only">Search people</span>
             <input
+              disabled={editMode}
               onChange={(event) => setQuery(event.target.value)}
               placeholder="Search"
               type="search"
@@ -111,8 +168,10 @@ export function OrgChartWorkspace() {
           </label>
         </div>
         <div className="toolbar-right">
-          <button className="primary-button">Legend</button>
-          <button className="secondary-button">
+          <button className="primary-button" disabled={editMode} type="button">
+            Legend
+          </button>
+          <button className="secondary-button" disabled={editMode} type="button">
             <Info size={15} aria-hidden="true" />
             Info
           </button>
@@ -125,10 +184,10 @@ export function OrgChartWorkspace() {
           fitViewOptions={{ padding: 0.2 }}
           maxZoom={1.35}
           minZoom={0.45}
-          nodes={nodes}
+          nodes={flowNodes}
           nodeTypes={nodeTypes}
           nodesDraggable
-          onNodesChange={onNodesChange}
+          onNodesChange={onNodesChange as OnNodesChange<ChartFlowNode>}
           panOnScroll
           proOptions={{ hideAttribution: true }}
         >

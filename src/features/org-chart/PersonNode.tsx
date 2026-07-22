@@ -36,6 +36,7 @@ function LinkedinGlyph() {
 
 export function PersonNode({ data }: NodeProps<PersonGraphNode>) {
   const hoveredPersonId = useOrgChartStore((state) => state.hoveredPersonId);
+  const editMode = useOrgChartStore((state) => state.editMode);
   const setHoveredPerson = useOrgChartStore((state) => state.setHoveredPerson);
   const selectPerson = useOrgChartStore((state) => state.selectPerson);
   const isActive = hoveredPersonId === data.contact.id;
@@ -51,6 +52,11 @@ export function PersonNode({ data }: NodeProps<PersonGraphNode>) {
       type="button"
     >
       <Handle className="node-handle" position={Position.Top} type="target" />
+      {editMode ? (
+        <span className="edit-remove-indicator" aria-hidden="true">
+          -
+        </span>
+      ) : null}
       {data.contact.relationshipTags.length > 0 ? (
         <div className="person-tags">
           {data.contact.relationshipTags.map((tag) => (
