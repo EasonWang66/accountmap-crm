@@ -1,6 +1,6 @@
 import { BriefcaseBusiness, Building2, Home, UsersRound } from "lucide-react";
 import type { PropsWithChildren } from "react";
-import profilePhoto from "../assets/profile-photo.jpg";
+import jamieBurtonPhoto from "../assets/jamie-burton.jpeg";
 
 const navItems = [
   { label: "Home", icon: Home },
@@ -35,7 +35,7 @@ export function CrmShell({ children }: PropsWithChildren) {
         <header className="topbar">
           <button className="back-button">Back</button>
           <div className="user-chip">
-            <img alt="" src={profilePhoto} />
+            <img alt="" src={jamieBurtonPhoto} />
             <span>Jamie Burton</span>
           </div>
         </header>
