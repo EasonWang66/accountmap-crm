@@ -28,8 +28,11 @@ export function AddCardNode({ data }: NodeProps<AddCardGraphNode>) {
       className="add-card-node nodrag nopan"
       type="button"
       aria-label="Add person under this column"
-      onClickCapture={(event) => event.stopPropagation()}
-      onPointerUp={(event) => {
+      onClick={(event) => {
+        event.stopPropagation();
+      }}
+      onPointerDownCapture={(event) => {
+        event.preventDefault();
         event.stopPropagation();
         addContact();
       }}
