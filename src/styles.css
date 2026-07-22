@@ -375,6 +375,13 @@ button {
   box-shadow: 0 0 0 2px rgb(23 107 145 / 14%);
 }
 
+.icon-button.active:disabled {
+  border-color: #b9b9b9;
+  background: #b9b9b9;
+  color: white;
+  box-shadow: none;
+}
+
 .filter-tool {
   position: relative;
   display: inline-flex;

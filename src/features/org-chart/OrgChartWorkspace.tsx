@@ -538,15 +538,31 @@ export function OrgChartWorkspace() {
         <div className="toolbar-left">
           <button
             className={editMode ? "save-button" : "primary-button"}
-            onClick={() => setEditMode(!editMode)}
+            onClick={() => {
+              const nextEditMode = !editMode;
+              setEditMode(nextEditMode);
+
+              if (nextEditMode) {
+                setVersionPanelOpen(false);
+                setContactListPanelOpen(false);
+                setFilterPanelOpen(false);
+              }
+            }}
             type="button"
           >
             {editMode ? null : <Pencil size={15} aria-hidden="true" />}
             {editMode ? "Save Changes" : "Edit"}
           </button>
+          {editMode ? (
+            <button className="add-contact-button" onClick={() => addContactToCanvas()} type="button">
+              <Plus size={15} aria-hidden="true" />
+              Add Contact
+            </button>
+          ) : null}
           <button
             className={versionPanelOpen ? "icon-button active" : "icon-button"}
             aria-label="Version history"
+            disabled={editMode}
             onClick={() => {
               setVersionPanelOpen(true);
               setContactListPanelOpen(false);
@@ -558,15 +574,10 @@ export function OrgChartWorkspace() {
           >
             <History size={17} />
           </button>
-          {editMode ? (
-            <button className="add-contact-button" onClick={() => addContactToCanvas()} type="button">
-              <Plus size={15} aria-hidden="true" />
-              Add Contact
-            </button>
-          ) : null}
           <button
             className={contactListPanelOpen ? "icon-button active" : "icon-button"}
             aria-label="All contacts"
+            disabled={editMode}
             onClick={() => {
               setContactListPanelOpen(true);
               setVersionPanelOpen(false);
@@ -583,6 +594,7 @@ export function OrgChartWorkspace() {
               className={filterPanelOpen || !showAllContacts ? "icon-button active" : "icon-button"}
               aria-expanded={filterPanelOpen}
               aria-label="Show or hide contacts"
+              disabled={editMode}
               onClick={() => {
                 setFilterPanelOpen((isOpen) => !isOpen);
                 setVersionPanelOpen(false);
