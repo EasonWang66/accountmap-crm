@@ -406,7 +406,9 @@ export function OrgChartWorkspace() {
       const hierarchyEdges = chartRelationshipEdges.map((edge) => ({
         id: edge.id,
         source: edge.sourceNodeId,
+        sourceHandle: "hierarchy-bottom",
         target: edge.targetNodeId,
+        targetHandle: "hierarchy-top",
         className: editMode ? "editable-chart-edge" : undefined,
         type: "smoothstep",
         animated: editMode,

@@ -765,7 +765,7 @@ button {
   min-height: clamp(36px, 5vh, 42px);
   border: 0;
   border-radius: 4px;
-  background: #0d3b52;
+  background: #176b91;
   color: #ffffff;
   font-weight: 800;
 }
@@ -774,10 +774,10 @@ button {
   width: min(280px, 100%);
   min-height: clamp(40px, 5.4vh, 46px);
   justify-self: center;
-  border: 2px solid #0d3b52;
+  border: 2px solid #176b91;
   border-radius: 5px;
   background: #eef3f6;
-  color: #0d3b52;
+  color: #176b91;
   font-size: 17px;
   font-weight: 800;
 }

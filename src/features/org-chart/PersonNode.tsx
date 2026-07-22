@@ -78,7 +78,13 @@ export function PersonNode({ data, id }: NodeProps<PersonGraphNode>) {
       role="button"
       tabIndex={0}
     >
-      <Handle className="node-handle" isConnectable={false} position={Position.Top} type="target" />
+      <Handle
+        className="node-handle"
+        id="hierarchy-top"
+        isConnectable={false}
+        position={Position.Top}
+        type="target"
+      />
       {editMode ? (
         <>
           <Handle
@@ -153,7 +159,13 @@ export function PersonNode({ data, id }: NodeProps<PersonGraphNode>) {
         <MailGlyph />
         <LinkedinGlyph />
       </div>
-      <Handle className="node-handle" isConnectable={false} position={Position.Bottom} type="source" />
+      <Handle
+        className="node-handle"
+        id="hierarchy-bottom"
+        isConnectable={false}
+        position={Position.Bottom}
+        type="source"
+      />
     </div>
   );
 }
