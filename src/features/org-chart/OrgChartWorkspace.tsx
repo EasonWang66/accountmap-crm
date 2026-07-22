@@ -22,7 +22,7 @@ const nodeTypes = {
 };
 
 type ChartFlowNode = PersonGraphNode;
-type ConnectionSide = "top" | "right" | "bottom" | "left";
+type ConnectionSide = "top" | "bottom";
 type ConnectedSides = Record<ConnectionSide, boolean>;
 type NodePosition = PersonGraphNode["position"];
 type PendingConnection = {
@@ -36,20 +36,25 @@ const CARD_GAP = 36;
 
 const emptyConnectedSides = (): ConnectedSides => ({
   bottom: false,
-  left: false,
-  right: false,
   top: false
 });
 
-const getConnectionSide = (node: PersonGraphNode, connectedNode: PersonGraphNode): ConnectionSide => {
-  const xDistance = connectedNode.position.x - node.position.x;
-  const yDistance = connectedNode.position.y - node.position.y;
+const constrainOrgChartEdges = (edges: ChartEdge[]) => {
+  const parentNodeIds = new Set<string>();
+  const childNodeIds = new Set<string>();
+  const constrainedEdges: ChartEdge[] = [];
 
-  if (Math.abs(xDistance) > Math.abs(yDistance)) {
-    return xDistance > 0 ? "right" : "left";
+  for (const edge of edges) {
+    if (parentNodeIds.has(edge.sourceNodeId) || childNodeIds.has(edge.targetNodeId)) {
+      continue;
+    }
+
+    parentNodeIds.add(edge.sourceNodeId);
+    childNodeIds.add(edge.targetNodeId);
+    constrainedEdges.push(edge);
   }
 
-  return yDistance > 0 ? "bottom" : "top";
+  return constrainedEdges;
 };
 
 const getSideFromHandleId = (handleId?: string | null): ConnectionSide | undefined => {
@@ -59,7 +64,7 @@ const getSideFromHandleId = (handleId?: string | null): ConnectionSide | undefin
 
   const side = handleId.replace("edit-", "");
 
-  return side === "top" || side === "right" || side === "bottom" || side === "left" ? side : undefined;
+  return side === "top" || side === "bottom" ? side : undefined;
 };
 
 const getPointerClientPosition = (event: globalThis.MouseEvent | TouchEvent) => {
@@ -81,31 +86,6 @@ const getNodeIdAtPointer = (event: globalThis.MouseEvent | TouchEvent) => {
 
   return nodeElement?.getAttribute("data-id") ?? undefined;
 };
-
-const isSideOccupied = (
-  nodeId: string,
-  side: ConnectionSide,
-  currentEdges: ChartEdge[],
-  nodeMap: Map<string, PersonGraphNode>
-) =>
-  currentEdges.some((edge) => {
-    const sourceNode = nodeMap.get(edge.sourceNodeId);
-    const targetNode = nodeMap.get(edge.targetNodeId);
-
-    if (!sourceNode || !targetNode) {
-      return false;
-    }
-
-    if (edge.sourceNodeId === nodeId) {
-      return getConnectionSide(sourceNode, targetNode) === side;
-    }
-
-    if (edge.targetNodeId === nodeId) {
-      return getConnectionSide(targetNode, sourceNode) === side;
-    }
-
-    return false;
-  });
 
 const overlapsExistingNode = (position: NodePosition, existingPosition: NodePosition) => {
   return (
@@ -168,7 +148,9 @@ export function OrgChartWorkspace() {
   const setHoveredPerson = useOrgChartStore((state) => state.setHoveredPerson);
 
   const [contacts, setContacts] = useState<Contact[]>(seedContacts);
-  const [chartRelationshipEdges, setChartRelationshipEdges] = useState<ChartEdge[]>(chartEdges);
+  const [chartRelationshipEdges, setChartRelationshipEdges] = useState<ChartEdge[]>(() =>
+    constrainOrgChartEdges(chartEdges)
+  );
   const pendingConnectionRef = useRef<PendingConnection | undefined>(undefined);
   const nextContactIndexRef = useRef(seedContacts.length + 1);
 
@@ -276,36 +258,33 @@ export function OrgChartWorkspace() {
       }
 
       setChartRelationshipEdges((currentEdges) => {
-        const nodeMap = new Map(nodes.map((node) => [node.id, node]));
-        const sourceNode = nodeMap.get(sourceNodeId);
-        const targetNode = nodeMap.get(targetNodeId);
+        const sourceSide = getSideFromHandleId(sourceHandleId);
+        const parentNodeId = sourceSide === "top" ? targetNodeId : sourceNodeId;
+        const childNodeId = sourceSide === "top" ? sourceNodeId : targetNodeId;
+        const nodeIds = new Set(nodes.map((node) => node.id));
 
-        if (!sourceNode || !targetNode) {
+        if (!nodeIds.has(parentNodeId) || !nodeIds.has(childNodeId)) {
           return currentEdges;
         }
 
         const alreadyConnected = currentEdges.some(
           (edge) =>
-            (edge.sourceNodeId === sourceNodeId && edge.targetNodeId === targetNodeId) ||
-            (edge.sourceNodeId === targetNodeId && edge.targetNodeId === sourceNodeId)
+            (edge.sourceNodeId === parentNodeId && edge.targetNodeId === childNodeId) ||
+            (edge.sourceNodeId === childNodeId && edge.targetNodeId === parentNodeId)
         );
-        const sourceSide = getSideFromHandleId(sourceHandleId) ?? getConnectionSide(sourceNode, targetNode);
-        const targetSide = getConnectionSide(targetNode, sourceNode);
+        const parentAlreadyHasChild = currentEdges.some((edge) => edge.sourceNodeId === parentNodeId);
+        const childAlreadyHasParent = currentEdges.some((edge) => edge.targetNodeId === childNodeId);
 
-        if (
-          alreadyConnected ||
-          isSideOccupied(sourceNodeId, sourceSide, currentEdges, nodeMap) ||
-          isSideOccupied(targetNodeId, targetSide, currentEdges, nodeMap)
-        ) {
+        if (alreadyConnected || parentAlreadyHasChild || childAlreadyHasParent) {
           return currentEdges;
         }
 
         return [
           ...currentEdges,
           {
-            id: `edge-${sourceNodeId}-${targetNodeId}-${Date.now()}`,
-            sourceNodeId,
-            targetNodeId,
+            id: `edge-${parentNodeId}-${childNodeId}-${Date.now()}`,
+            sourceNodeId: parentNodeId,
+            targetNodeId: childNodeId,
             relationshipType: "reports-to"
           }
         ];
@@ -371,19 +350,11 @@ export function OrgChartWorkspace() {
   ) as (event: ReactMouseEvent, edge: Edge) => void;
 
   const connectedSideMap = useMemo(() => {
-    const nodeMap = new Map(nodes.map((node) => [node.id, node]));
     const sideMap = new Map(nodes.map((node) => [node.id, emptyConnectedSides()]));
 
     chartRelationshipEdges.forEach((edge) => {
-      const sourceNode = nodeMap.get(edge.sourceNodeId);
-      const targetNode = nodeMap.get(edge.targetNodeId);
-
-      if (!sourceNode || !targetNode) {
-        return;
-      }
-
-      sideMap.get(sourceNode.id)![getConnectionSide(sourceNode, targetNode)] = true;
-      sideMap.get(targetNode.id)![getConnectionSide(targetNode, sourceNode)] = true;
+      sideMap.get(edge.sourceNodeId)!.bottom = true;
+      sideMap.get(edge.targetNodeId)!.top = true;
     });
 
     return sideMap;

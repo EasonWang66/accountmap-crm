@@ -5,7 +5,7 @@ import { useOrgChartStore } from "../../stores/orgChartStore";
 
 export type PersonNodeData = {
   [key: string]: unknown;
-  connectedSides?: Record<"top" | "right" | "bottom" | "left", boolean>;
+  connectedSides?: Record<"top" | "bottom", boolean>;
   contact: Contact;
   matched: boolean;
   onDeleteContact: (nodeId: string) => void;
@@ -48,8 +48,6 @@ export function PersonNode({ data, id }: NodeProps<PersonGraphNode>) {
   const showConnectionHandles = editMode && selectedPersonId === data.contact.id;
   const connectedSides = data.connectedSides ?? {
     bottom: false,
-    left: false,
-    right: false,
     top: false
   };
 
@@ -57,8 +55,6 @@ export function PersonNode({ data, id }: NodeProps<PersonGraphNode>) {
     updateNodeInternals(String(id));
   }, [
     connectedSides.bottom,
-    connectedSides.left,
-    connectedSides.right,
     connectedSides.top,
     id,
     showConnectionHandles,
@@ -111,17 +107,6 @@ export function PersonNode({ data, id }: NodeProps<PersonGraphNode>) {
               type="source"
             />
           ) : null}
-          {showConnectionHandles && !connectedSides.right ? (
-            <Handle
-              className="edit-connection-handle nodrag nopan right"
-              id="edit-right"
-              isConnectable
-              isConnectableEnd={false}
-              isConnectableStart
-              position={Position.Right}
-              type="source"
-            />
-          ) : null}
           {showConnectionHandles && !connectedSides.bottom ? (
             <Handle
               className="edit-connection-handle nodrag nopan bottom"
@@ -130,17 +115,6 @@ export function PersonNode({ data, id }: NodeProps<PersonGraphNode>) {
               isConnectableEnd={false}
               isConnectableStart
               position={Position.Bottom}
-              type="source"
-            />
-          ) : null}
-          {showConnectionHandles && !connectedSides.left ? (
-            <Handle
-              className="edit-connection-handle nodrag nopan left"
-              id="edit-left"
-              isConnectable
-              isConnectableEnd={false}
-              isConnectableStart
-              position={Position.Left}
               type="source"
             />
           ) : null}

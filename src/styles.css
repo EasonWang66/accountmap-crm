@@ -542,16 +542,8 @@ button {
   top: -17px;
 }
 
-.edit-connection-handle.right {
-  right: -17px;
-}
-
 .edit-connection-handle.bottom {
   bottom: -17px;
-}
-
-.edit-connection-handle.left {
-  left: -17px;
 }
 
 .person-tags {
