@@ -18,7 +18,6 @@ import {
   Info,
   Linkedin,
   List,
-  Mail,
   MapPin,
   MoreVertical,
   Pencil,
@@ -38,6 +37,14 @@ import { PersonNode, type PersonGraphNode } from "./PersonNode";
 const nodeTypes = {
   person: PersonNode
 };
+
+function EmailGlyph({ size = 20 }: { size?: number }) {
+  return (
+    <svg aria-hidden="true" width={size} height={size} viewBox="0 0 24 24">
+      <path d="M3.8 5.7h16.4c.9 0 1.6.7 1.6 1.6v9.4c0 .9-.7 1.6-1.6 1.6H3.8c-.9 0-1.6-.7-1.6-1.6V7.3c0-.9.7-1.6 1.6-1.6Zm.9 2.1L12 12.7l7.3-4.9H4.7Zm15.1 8.4V9.5l-7.1 4.8c-.4.3-.9.3-1.3 0L4.2 9.5v6.7h15.6Z" />
+    </svg>
+  );
+}
 
 type ChartFlowNode = PersonGraphNode;
 type ConnectionSide = "top" | "bottom";
@@ -829,7 +836,7 @@ export function OrgChartWorkspace() {
                     <input defaultValue="(555) 123-4567" />
                   </label>
                   <label>
-                    <Mail size={20} aria-hidden="true" />
+                    <EmailGlyph size={20} />
                     <input defaultValue={`${getContactEmailName(selectedContact.fullName)}@coca-cola.com`} />
                   </label>
                   <label>
@@ -853,7 +860,7 @@ export function OrgChartWorkspace() {
                       <strong>Leo Young</strong>
                       <span>Current AM in Charge</span>
                     </div>
-                    <Mail size={22} aria-hidden="true" />
+                    <EmailGlyph size={22} />
                   </div>
                 )}
                 <div className="drawer-edit-actions">
@@ -878,7 +885,7 @@ export function OrgChartWorkspace() {
                     <span>(555) 123-4567</span>
                   </div>
                   <div>
-                    <Mail size={20} aria-hidden="true" />
+                    <EmailGlyph size={20} />
                     <span>{getContactEmailName(selectedContact.fullName)}@coca-cola.com</span>
                   </div>
                   <div>
@@ -921,7 +928,7 @@ export function OrgChartWorkspace() {
                       <strong>Leo Young</strong>
                       <span>Current AM in Charge</span>
                     </div>
-                    <Mail size={22} aria-hidden="true" />
+                    <EmailGlyph size={22} />
                   </div>
                 )}
               </>
@@ -961,12 +968,16 @@ export function OrgChartWorkspace() {
                   </h3>
                   <div className="activity-item-list">
                     {section.items.map((item) => {
-                      const ActivityIcon = item.icon === "call" ? Phone : item.icon === "email" ? Mail : Users;
-
                       return (
                         <article className="activity-item" key={`${section.title}-${item.title}-${item.time}`}>
                           <span className="activity-icon">
-                            <ActivityIcon size={17} aria-hidden="true" />
+                            {item.icon === "call" ? (
+                              <Phone size={17} aria-hidden="true" />
+                            ) : item.icon === "email" ? (
+                              <EmailGlyph size={17} />
+                            ) : (
+                              <Users size={17} aria-hidden="true" />
+                            )}
                           </span>
                           <div className="activity-card">
                             <strong>{item.title}</strong>
