@@ -136,6 +136,14 @@ const findOpenCardPosition = (currentNodes: PersonGraphNode[]) => {
 
 const getContactSlug = (fullName: string) => fullName.toLowerCase().replace(/\s+/g, "");
 const getContactEmailName = (fullName: string) => fullName.toLowerCase().replace(/\s+/g, ".");
+const isPlaceholderContact = (contact: Contact) => contact.id.startsWith("new-contact-");
+const getContactBio = (contact: Contact) => {
+  if (isPlaceholderContact(contact)) {
+    return "Please input description";
+  }
+
+  return `${contact.fullName} is the ${contact.title.toLowerCase()} for Coca-Cola's enterprise account team, bringing cross-functional experience in stakeholder alignment, account planning, and organizational execution. With a proven track record of improving communication across departments, ${contact.fullName.split(" ")[0]} helps teams identify priorities, remove blockers, and drive relationship momentum across the account.`;
+};
 
 export function OrgChartWorkspace() {
   const editMode = useOrgChartStore((state) => state.editMode);
@@ -158,23 +166,22 @@ export function OrgChartWorkspace() {
   const normalizedQuery = query.trim().toLowerCase();
   const activePersonId = selectedPersonId ?? hoveredPersonId;
   const selectedContact = contacts.find((contact) => contact.id === activePersonId);
-  const selectedContactBio = selectedContact
-    ? `${selectedContact.fullName} is the ${selectedContact.title.toLowerCase()} for Coca-Cola's enterprise account team, bringing cross-functional experience in stakeholder alignment, account planning, and organizational execution. With a proven track record of improving communication across departments, ${selectedContact.fullName.split(" ")[0]} helps teams identify priorities, remove blockers, and drive relationship momentum across the account.`
-    : "";
+  const selectedContactBio = selectedContact ? getContactBio(selectedContact) : "";
+  const selectedContactBioPreview =
+    selectedContact && isPlaceholderContact(selectedContact)
+      ? selectedContactBio
+      : `${selectedContactBio.slice(0, 230)}...`;
 
   const createPlaceholderContact = useCallback((index: number): Contact => {
-    const metric = 6 + ((index * 5) % 17);
-
     return {
       id: `new-contact-${index}`,
       accountId: "acct-coca-cola",
-      fullName: `New Contact ${index}`,
-      title: "Account Stakeholder",
-      department: "New Relationship",
-      location: "Atlanta, GA",
-      relationshipTags: [`${1 + (index % 9)} C`, `${2 + (index % 8)} FTE`],
-      cardVariant: index % 2 === 0 ? "grey" : "blue",
-      cardMetric: index % 2 === 0 ? undefined : metric
+      fullName: "Contact Name",
+      title: "Position Title",
+      department: "Relationship Type",
+      location: "Location",
+      relationshipTags: [],
+      cardVariant: "grey"
     };
   }, []);
 
@@ -560,7 +567,7 @@ export function OrgChartWorkspace() {
                 </div>
                 {selectedContact.cardVariant === "grey" ? (
                   <button className="add-to-leads-button" type="button">
-                    Add to Leads
+                    Add AM
                   </button>
                 ) : (
                   <div className="account-manager-card edit-manager-card">
@@ -607,7 +614,7 @@ export function OrgChartWorkspace() {
                   </div>
                 </div>
                 <div className="drawer-bio">
-                  <p>{selectedContactBio.slice(0, 230)}...</p>
+                  <p>{selectedContactBioPreview}</p>
                   <button type="button">see more</button>
                 </div>
                 <div className="drawer-action-stack">
@@ -617,7 +624,7 @@ export function OrgChartWorkspace() {
                 </div>
                 {selectedContact.cardVariant === "grey" ? (
                   <button className="add-to-leads-button" type="button">
-                    Add to Leads
+                    Add AM
                   </button>
                 ) : (
                   <div className="account-manager-card">
