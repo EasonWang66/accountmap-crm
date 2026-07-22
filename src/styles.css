@@ -733,17 +733,21 @@ button {
   overflow: hidden;
   background: #ffffff;
   color: #0f172a;
-  box-shadow: -18px 0 36px rgb(15 23 42 / 18%);
+  box-shadow: none;
   transform: translateX(105%);
-  transition: transform 160ms ease;
+  transition: transform 160ms ease, box-shadow 160ms ease;
 }
 
 .person-drawer.open {
+  box-shadow: -18px 0 36px rgb(15 23 42 / 18%);
   transform: translateX(0);
 }
 
 .person-drawer.edit-drawer {
   width: min(390px, 92vw);
+}
+
+.person-drawer.edit-drawer.open {
   box-shadow: -14px 0 40px rgb(0 0 0 / 30%);
 }
 
@@ -970,9 +974,9 @@ button {
   overflow: hidden;
   background: #ffffff;
   color: #050505;
-  box-shadow: -18px 0 36px rgb(15 23 42 / 18%);
+  box-shadow: none;
   transform: translateX(105%);
-  transition: transform 160ms ease;
+  transition: transform 160ms ease, box-shadow 160ms ease;
 }
 
 .activity-timeline-drawer {
@@ -985,9 +989,9 @@ button {
   overflow: hidden;
   background: #ffffff;
   color: #050505;
-  box-shadow: -18px 0 36px rgb(15 23 42 / 18%);
+  box-shadow: none;
   transform: translateX(105%);
-  transition: transform 160ms ease;
+  transition: transform 160ms ease, box-shadow 160ms ease;
 }
 
 .contract-placements-drawer {
@@ -1000,9 +1004,9 @@ button {
   overflow: hidden;
   background: #ffffff;
   color: #050505;
-  box-shadow: -18px 0 36px rgb(15 23 42 / 18%);
+  box-shadow: none;
   transform: translateX(105%);
-  transition: transform 160ms ease;
+  transition: transform 160ms ease, box-shadow 160ms ease;
 }
 
 .contact-list-drawer {
@@ -1015,24 +1019,28 @@ button {
   overflow: hidden;
   background: #ffffff;
   color: #050505;
-  box-shadow: -18px 0 36px rgb(15 23 42 / 18%);
+  box-shadow: none;
   transform: translateX(105%);
-  transition: transform 160ms ease;
+  transition: transform 160ms ease, box-shadow 160ms ease;
 }
 
 .version-history-drawer.open {
+  box-shadow: -18px 0 36px rgb(15 23 42 / 18%);
   transform: translateX(0);
 }
 
 .activity-timeline-drawer.open {
+  box-shadow: -18px 0 36px rgb(15 23 42 / 18%);
   transform: translateX(0);
 }
 
 .contract-placements-drawer.open {
+  box-shadow: -18px 0 36px rgb(15 23 42 / 18%);
   transform: translateX(0);
 }
 
 .contact-list-drawer.open {
+  box-shadow: -18px 0 36px rgb(15 23 42 / 18%);
   transform: translateX(0);
 }
 
