@@ -77,41 +77,21 @@ export function OrgChartWorkspace() {
   const deleteContactNode = useCallback(
     (nodeId: string) => {
       setNodes((currentNodes) => {
-        const childMap = new Map<string, string[]>();
+        const contactIdToDelete = currentNodes.find((node) => node.id === nodeId)?.data.contact.id;
 
-        chartRelationshipEdges.forEach((edge) => {
-          childMap.set(edge.sourceNodeId, [...(childMap.get(edge.sourceNodeId) ?? []), edge.targetNodeId]);
-        });
-
-        const nodeIdsToDelete = new Set<string>();
-        const stack = [nodeId];
-
-        while (stack.length > 0) {
-          const currentNodeId = stack.pop();
-
-          if (!currentNodeId || nodeIdsToDelete.has(currentNodeId)) {
-            continue;
-          }
-
-          nodeIdsToDelete.add(currentNodeId);
-          stack.push(...(childMap.get(currentNodeId) ?? []));
+        if (contactIdToDelete) {
+          setContacts((currentContacts) => currentContacts.filter((contact) => contact.id !== contactIdToDelete));
         }
-
-        const contactIdsToDelete = new Set(
-          currentNodes.filter((node) => nodeIdsToDelete.has(node.id)).map((node) => node.data.contact.id)
-        );
-
-        setContacts((currentContacts) => currentContacts.filter((contact) => !contactIdsToDelete.has(contact.id)));
         setChartRelationshipEdges((currentEdges) =>
-          currentEdges.filter((edge) => !nodeIdsToDelete.has(edge.sourceNodeId) && !nodeIdsToDelete.has(edge.targetNodeId))
+          currentEdges.filter((edge) => edge.sourceNodeId !== nodeId && edge.targetNodeId !== nodeId)
         );
         selectPerson(undefined);
         setHoveredPerson(undefined);
 
-        return currentNodes.filter((node) => !nodeIdsToDelete.has(node.id));
+        return currentNodes.filter((node) => node.id !== nodeId);
       });
     },
-    [chartRelationshipEdges, selectPerson, setHoveredPerson, setNodes]
+    [selectPerson, setHoveredPerson, setNodes]
   );
 
   const addContactUnderNode = useCallback(

@@ -55,7 +55,7 @@ export function PersonNode({ data, id }: NodeProps<PersonGraphNode>) {
       <Handle className="node-handle" position={Position.Top} type="target" />
       {editMode ? (
         <span
-          className="edit-remove-indicator"
+          className="edit-remove-indicator nodrag nopan"
           aria-label={`Delete ${data.contact.fullName}`}
           onClick={(event) => {
             event.stopPropagation();
