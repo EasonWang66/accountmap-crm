@@ -782,9 +782,9 @@ button {
   font-weight: 800;
 }
 
-.drawer-content > .add-to-leads-button,
-.drawer-content > .account-manager-card {
-  margin-top: auto;
+.person-drawer.edit-drawer .drawer-content > .add-to-leads-button,
+.person-drawer.edit-drawer .drawer-content > .account-manager-card {
+  margin-top: clamp(24px, 6vh, 56px);
 }
 
 .account-manager-card {
@@ -945,7 +945,7 @@ button {
   align-items: center;
   justify-content: space-between;
   gap: 16px;
-  margin-top: clamp(2px, 1vh, 8px);
+  margin-top: clamp(14px, 2.4vh, 24px);
 }
 
 .drawer-edit-actions button {
