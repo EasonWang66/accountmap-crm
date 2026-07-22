@@ -40,16 +40,14 @@ const emptyConnectedSides = (): ConnectedSides => ({
 });
 
 const constrainOrgChartEdges = (edges: ChartEdge[]) => {
-  const parentNodeIds = new Set<string>();
   const childNodeIds = new Set<string>();
   const constrainedEdges: ChartEdge[] = [];
 
   for (const edge of edges) {
-    if (parentNodeIds.has(edge.sourceNodeId) || childNodeIds.has(edge.targetNodeId)) {
+    if (childNodeIds.has(edge.targetNodeId)) {
       continue;
     }
 
-    parentNodeIds.add(edge.sourceNodeId);
     childNodeIds.add(edge.targetNodeId);
     constrainedEdges.push(edge);
   }
@@ -272,10 +270,9 @@ export function OrgChartWorkspace() {
             (edge.sourceNodeId === parentNodeId && edge.targetNodeId === childNodeId) ||
             (edge.sourceNodeId === childNodeId && edge.targetNodeId === parentNodeId)
         );
-        const parentAlreadyHasChild = currentEdges.some((edge) => edge.sourceNodeId === parentNodeId);
         const childAlreadyHasParent = currentEdges.some((edge) => edge.targetNodeId === childNodeId);
 
-        if (alreadyConnected || parentAlreadyHasChild || childAlreadyHasParent) {
+        if (alreadyConnected || childAlreadyHasParent) {
           return currentEdges;
         }
 
@@ -353,7 +350,6 @@ export function OrgChartWorkspace() {
     const sideMap = new Map(nodes.map((node) => [node.id, emptyConnectedSides()]));
 
     chartRelationshipEdges.forEach((edge) => {
-      sideMap.get(edge.sourceNodeId)!.bottom = true;
       sideMap.get(edge.targetNodeId)!.top = true;
     });
 

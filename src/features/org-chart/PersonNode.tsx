@@ -53,13 +53,7 @@ export function PersonNode({ data, id }: NodeProps<PersonGraphNode>) {
 
   useEffect(() => {
     updateNodeInternals(String(id));
-  }, [
-    connectedSides.bottom,
-    connectedSides.top,
-    id,
-    showConnectionHandles,
-    updateNodeInternals
-  ]);
+  }, [connectedSides.top, id, showConnectionHandles, updateNodeInternals]);
 
   const selectCurrentPerson = () => selectPerson(data.contact.id);
 
@@ -107,7 +101,7 @@ export function PersonNode({ data, id }: NodeProps<PersonGraphNode>) {
               type="source"
             />
           ) : null}
-          {showConnectionHandles && !connectedSides.bottom ? (
+          {showConnectionHandles ? (
             <Handle
               className="edit-connection-handle nodrag nopan bottom"
               id="edit-bottom"
