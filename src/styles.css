@@ -494,7 +494,7 @@ button {
   box-shadow: 0 1px 2px rgb(0 0 0 / 12%);
 }
 
-.edit-target-handle,
+.edit-card-target-handle,
 .edit-connection-handle {
   width: 34px;
   height: 34px;
@@ -503,11 +503,19 @@ button {
   border-radius: 999px;
 }
 
-.edit-target-handle {
-  z-index: 3;
+.edit-card-target-handle {
+  top: 50%;
+  left: 50%;
+  z-index: 1;
+  width: 124px;
+  height: 88px;
+  min-width: 124px;
+  min-height: 88px;
   border: 0;
+  border-radius: 4px;
   background: transparent;
   opacity: 0;
+  transform: translate(-50%, -50%);
 }
 
 .edit-connection-handle {
@@ -530,22 +538,18 @@ button {
     0 4px 10px rgb(13 59 82 / 30%);
 }
 
-.edit-target-handle.top,
 .edit-connection-handle.top {
   top: -17px;
 }
 
-.edit-target-handle.right,
 .edit-connection-handle.right {
   right: -17px;
 }
 
-.edit-target-handle.bottom,
 .edit-connection-handle.bottom {
   bottom: -17px;
 }
 
-.edit-target-handle.left,
 .edit-connection-handle.left {
   left: -17px;
 }

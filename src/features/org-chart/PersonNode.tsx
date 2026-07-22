@@ -91,50 +91,15 @@ export function PersonNode({ data, id }: NodeProps<PersonGraphNode>) {
       <Handle className="node-handle" isConnectable={false} position={Position.Top} type="target" />
       {editMode ? (
         <>
-          {!connectedSides.top ? (
-            <Handle
-              className="edit-target-handle nodrag nopan top"
-              id="target-top"
-              isConnectable
-              isConnectableEnd
-              isConnectableStart={false}
-              position={Position.Top}
-              type="target"
-            />
-          ) : null}
-          {!connectedSides.right ? (
-            <Handle
-              className="edit-target-handle nodrag nopan right"
-              id="target-right"
-              isConnectable
-              isConnectableEnd
-              isConnectableStart={false}
-              position={Position.Right}
-              type="target"
-            />
-          ) : null}
-          {!connectedSides.bottom ? (
-            <Handle
-              className="edit-target-handle nodrag nopan bottom"
-              id="target-bottom"
-              isConnectable
-              isConnectableEnd
-              isConnectableStart={false}
-              position={Position.Bottom}
-              type="target"
-            />
-          ) : null}
-          {!connectedSides.left ? (
-            <Handle
-              className="edit-target-handle nodrag nopan left"
-              id="target-left"
-              isConnectable
-              isConnectableEnd
-              isConnectableStart={false}
-              position={Position.Left}
-              type="target"
-            />
-          ) : null}
+          <Handle
+            className="edit-card-target-handle nodrag nopan"
+            id="target-card"
+            isConnectable
+            isConnectableEnd
+            isConnectableStart={false}
+            position={Position.Top}
+            type="target"
+          />
           {showConnectionHandles && !connectedSides.top ? (
             <Handle
               className="edit-connection-handle nodrag nopan top"
