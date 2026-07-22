@@ -822,6 +822,13 @@ button {
   fill: currentColor;
 }
 
+.profile-contact-icon {
+  display: block;
+  width: 20px;
+  height: 20px;
+  object-fit: contain;
+}
+
 .drawer-bio {
   display: grid;
   gap: 4px;
@@ -926,7 +933,8 @@ button {
   font-weight: 700;
 }
 
-.account-manager-card svg {
+.account-manager-card svg,
+.account-manager-card .profile-contact-icon {
   justify-self: end;
   color: #0d3b52;
   fill: currentColor;
@@ -1227,6 +1235,11 @@ button {
 
 .activity-icon svg {
   fill: currentColor;
+}
+
+.activity-icon .profile-contact-icon {
+  width: 17px;
+  height: 17px;
 }
 
 .activity-card {

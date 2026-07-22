@@ -17,9 +17,7 @@ import {
   Eye,
   History,
   Info,
-  Linkedin,
   List,
-  MapPin,
   MoreVertical,
   Pencil,
   Phone,
@@ -28,6 +26,10 @@ import {
   Users,
   X
 } from "lucide-react";
+import locationIcon from "../../assets/contact-location.png";
+import linkedinIcon from "../../assets/contact-linkedin.png";
+import mailIcon from "../../assets/contact-mail.png";
+import phoneIcon from "../../assets/contact-phone.png";
 import { useCallback, useEffect, useMemo, useRef, useState, type MouseEvent as ReactMouseEvent } from "react";
 import profilePhoto from "../../assets/profile-photo.jpg";
 import { chartEdges, chartNodes, contacts as seedContacts } from "../../data/seed";
@@ -39,28 +41,24 @@ const nodeTypes = {
   person: PersonNode
 };
 
-function EmailGlyph({ size = 20 }: { size?: number }) {
-  return (
-    <svg aria-hidden="true" width={size} height={size} viewBox="0 0 24 24">
-      <path d="M3.8 5.7h16.4c.9 0 1.6.7 1.6 1.6v9.4c0 .9-.7 1.6-1.6 1.6H3.8c-.9 0-1.6-.7-1.6-1.6V7.3c0-.9.7-1.6 1.6-1.6Zm.9 2.1L12 12.7l7.3-4.9H4.7Zm15.1 8.4V9.5l-7.1 4.8c-.4.3-.9.3-1.3 0L4.2 9.5v6.7h15.6Z" />
-    </svg>
-  );
+function ProfileIcon({ alt, src }: { alt: string; src: string }) {
+  return <img className="profile-contact-icon" alt={alt} src={src} />;
 }
 
 function ContractorPlaceholderIllustration() {
   return (
     <svg className="contractor-illustration" aria-hidden="true" viewBox="0 0 180 180">
       <circle cx="90" cy="90" r="88" fill="#e8f3f8" />
-      <circle cx="90" cy="72" r="34" fill="#176b91" opacity="0.9" />
+      <circle cx="90" cy="74" r="34" fill="#176b91" opacity="0.9" />
       <path
-        d="M34 154c8-35 30-53 56-53s48 18 56 53"
-        fill="#ffffff"
+        d="M42 144c9-30 27-46 48-46s39 16 48 46"
+        fill="none"
         stroke="#176b91"
         strokeLinecap="round"
         strokeLinejoin="round"
-        strokeWidth="10"
+        strokeWidth="13"
       />
-      <path d="M64 76c12 10 40 10 52 0" fill="none" stroke="#ffffff" strokeLinecap="round" strokeWidth="7" />
+      <path d="M65 77c12 11 38 11 50 0" fill="none" stroke="#ffffff" strokeLinecap="round" strokeWidth="7" />
       <circle cx="78" cy="67" r="4" fill="#ffffff" />
       <circle cx="102" cy="67" r="4" fill="#ffffff" />
     </svg>
@@ -931,19 +929,19 @@ export function OrgChartWorkspace() {
                 </div>
                 <div className="drawer-edit-fields">
                   <label>
-                    <Phone size={20} aria-hidden="true" />
+                    <ProfileIcon alt="Phone" src={phoneIcon} />
                     <input defaultValue="(555) 123-4567" />
                   </label>
                   <label>
-                    <EmailGlyph size={20} />
+                    <ProfileIcon alt="Email" src={mailIcon} />
                     <input defaultValue={`${getContactEmailName(selectedContact.fullName)}@coca-cola.com`} />
                   </label>
                   <label>
-                    <Linkedin size={20} aria-hidden="true" />
+                    <ProfileIcon alt="LinkedIn" src={linkedinIcon} />
                     <input defaultValue={`linkedin.com/in/${getContactSlug(selectedContact.fullName)}`} />
                   </label>
                   <label>
-                    <MapPin size={20} aria-hidden="true" />
+                    <ProfileIcon alt="Location" src={locationIcon} />
                     <input defaultValue={selectedContact.location} />
                   </label>
                   <textarea defaultValue={selectedContactBio} />
@@ -959,7 +957,7 @@ export function OrgChartWorkspace() {
                       <strong>Leo Young</strong>
                       <span>Current AM in Charge</span>
                     </div>
-                    <EmailGlyph size={22} />
+                    <ProfileIcon alt="Email" src={mailIcon} />
                   </div>
                 )}
                 <div className="drawer-edit-actions">
@@ -980,19 +978,19 @@ export function OrgChartWorkspace() {
                 </div>
                 <div className="drawer-contact-list">
                   <div>
-                    <Phone size={20} aria-hidden="true" />
+                    <ProfileIcon alt="Phone" src={phoneIcon} />
                     <span>(555) 123-4567</span>
                   </div>
                   <div>
-                    <EmailGlyph size={20} />
+                    <ProfileIcon alt="Email" src={mailIcon} />
                     <span>{getContactEmailName(selectedContact.fullName)}@coca-cola.com</span>
                   </div>
                   <div>
-                    <Linkedin size={20} aria-hidden="true" />
+                    <ProfileIcon alt="LinkedIn" src={linkedinIcon} />
                     <span>linkedin.com/in/{getContactSlug(selectedContact.fullName)}</span>
                   </div>
                   <div>
-                    <MapPin size={20} aria-hidden="true" />
+                    <ProfileIcon alt="Location" src={locationIcon} />
                     <span>{selectedContact.location}</span>
                   </div>
                 </div>
@@ -1044,7 +1042,7 @@ export function OrgChartWorkspace() {
                       <strong>Leo Young</strong>
                       <span>Current AM in Charge</span>
                     </div>
-                    <EmailGlyph size={22} />
+                    <ProfileIcon alt="Email" src={mailIcon} />
                   </div>
                 )}
               </>
@@ -1090,7 +1088,7 @@ export function OrgChartWorkspace() {
                             {item.icon === "call" ? (
                               <Phone size={17} aria-hidden="true" />
                             ) : item.icon === "email" ? (
-                              <EmailGlyph size={17} />
+                              <ProfileIcon alt="Email" src={mailIcon} />
                             ) : (
                               <Users size={17} aria-hidden="true" />
                             )}
@@ -1154,19 +1152,19 @@ export function OrgChartWorkspace() {
                 </div>
                 <div className="drawer-contact-list placement-contact-list">
                   <div>
-                    <Phone size={20} aria-hidden="true" />
+                    <ProfileIcon alt="Phone" src={phoneIcon} />
                     <span>{selectedPlacement.phone}</span>
                   </div>
                   <div>
-                    <EmailGlyph size={20} />
+                    <ProfileIcon alt="Email" src={mailIcon} />
                     <span>{selectedPlacement.email}</span>
                   </div>
                   <div>
-                    <Linkedin size={20} aria-hidden="true" />
+                    <ProfileIcon alt="LinkedIn" src={linkedinIcon} />
                     <span>{selectedPlacement.linkedin}</span>
                   </div>
                   <div>
-                    <MapPin size={20} aria-hidden="true" />
+                    <ProfileIcon alt="Location" src={locationIcon} />
                     <span>{selectedPlacement.location}</span>
                   </div>
                 </div>
