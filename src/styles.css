@@ -778,6 +778,11 @@ button {
   object-fit: cover;
 }
 
+.profile-placeholder-illustration {
+  border-radius: 999px;
+  object-fit: cover;
+}
+
 .drawer-identity {
   display: grid;
   justify-items: center;
@@ -1531,6 +1536,15 @@ button {
   border-radius: 999px;
   filter: grayscale(1);
   object-fit: cover;
+  opacity: 0.72;
+}
+
+.profile-image-editor .profile-placeholder-illustration,
+.profile-editor-placeholder {
+  width: clamp(104px, 16vh, 136px);
+  height: clamp(104px, 16vh, 136px);
+  border-radius: 999px;
+  filter: grayscale(1);
   opacity: 0.72;
 }
 

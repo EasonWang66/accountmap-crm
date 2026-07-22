@@ -30,6 +30,19 @@ import locationIcon from "../../assets/contact-location.png";
 import linkedinIcon from "../../assets/contact-linkedin.png";
 import mailIcon from "../../assets/contact-mail.png";
 import phoneIcon from "../../assets/contact-phone.png";
+import profileCherylGarvin from "../../assets/crm-profile/h2.jpg";
+import profileDanielWalker from "../../assets/crm-profile/h12.jpeg";
+import profileEmilyWright from "../../assets/crm-profile/h7.jpeg";
+import profileEvelynChen from "../../assets/crm-profile/h4.jpeg";
+import profileJonMcFarland from "../../assets/crm-profile/h3.jpeg";
+import profileKevinSanchez from "../../assets/crm-profile/h8.jpeg";
+import profileLilyLambert from "../../assets/crm-profile/h6.jpeg";
+import profileMichelleBrown from "../../assets/crm-profile/h9.jpeg";
+import profileNicoleBennett from "../../assets/crm-profile/h10.jpeg";
+import profileRobertElbert from "../../assets/crm-profile/h1.jpg";
+import profileRobertGreen from "../../assets/crm-profile/h5.jpeg";
+import profileRyanEdwards from "../../assets/crm-profile/h11.jpg";
+import profileTessaMorris from "../../assets/crm-profile/m2.jpg";
 import { useCallback, useEffect, useMemo, useRef, useState, type MouseEvent as ReactMouseEvent } from "react";
 import profilePhoto from "../../assets/profile-photo.jpg";
 import { chartEdges, chartNodes, contacts as seedContacts } from "../../data/seed";
@@ -54,6 +67,26 @@ function ContractorPlaceholderIllustration() {
         d="M42 144c9-30 27-46 48-46s39 16 48 46"
         fill="none"
         stroke="#176b91"
+        strokeLinecap="round"
+        strokeLinejoin="round"
+        strokeWidth="13"
+      />
+      <path d="M65 77c12 11 38 11 50 0" fill="none" stroke="#ffffff" strokeLinecap="round" strokeWidth="7" />
+      <circle cx="78" cy="67" r="4" fill="#ffffff" />
+      <circle cx="102" cy="67" r="4" fill="#ffffff" />
+    </svg>
+  );
+}
+
+function ProfilePlaceholderIllustration({ className = "drawer-avatar" }: { className?: string }) {
+  return (
+    <svg className={`${className} profile-placeholder-illustration`} aria-hidden="true" viewBox="0 0 180 180">
+      <circle cx="90" cy="90" r="88" fill="#eeeeee" />
+      <circle cx="90" cy="74" r="34" fill="#8f8f8f" />
+      <path
+        d="M42 144c9-30 27-46 48-46s39 16 48 46"
+        fill="none"
+        stroke="#8f8f8f"
         strokeLinecap="round"
         strokeLinejoin="round"
         strokeWidth="13"
@@ -220,6 +253,24 @@ const findOpenCardPosition = (currentNodes: PersonGraphNode[]) => {
 const getContactSlug = (fullName: string) => fullName.toLowerCase().replace(/\s+/g, "");
 const getContactEmailName = (fullName: string) => fullName.toLowerCase().replace(/\s+/g, ".");
 const isPlaceholderContact = (contact: Contact) => contact.id.startsWith("new-contact-");
+const contactProfileImages: Record<string, string> = {
+  "cheryl-garvin": profileCherylGarvin,
+  "daniel-walker": profileDanielWalker,
+  "emily-wright": profileEmilyWright,
+  "evelyn-chen": profileEvelynChen,
+  "jon-mcfarland": profileJonMcFarland,
+  "kevin-sanchez": profileKevinSanchez,
+  "lily-lambert": profileLilyLambert,
+  "michelle-brown": profileMichelleBrown,
+  "nicole-bennett": profileNicoleBennett,
+  "robert-elbert": profileRobertElbert,
+  "robert-green": profileRobertGreen,
+  "ryan-edwards": profileRyanEdwards,
+  "tessa-morris": profileTessaMorris
+};
+const getContactProfileImage = (contact: Contact) =>
+  isPlaceholderContact(contact) ? undefined : contactProfileImages[contact.id];
+
 const getContactBio = (contact: Contact) => {
   if (isPlaceholderContact(contact)) {
     return "Please input description";
@@ -415,6 +466,7 @@ export function OrgChartWorkspace() {
     selectedContact && isPlaceholderContact(selectedContact)
       ? selectedContactBio
       : `${selectedContactBio.slice(0, 230)}...`;
+  const selectedContactProfileImage = selectedContact ? getContactProfileImage(selectedContact) : undefined;
   const activityTimelineSections = activityTimelineContact ? getActivityTimeline(activityTimelineContact) : [];
   const contractPlacements = useMemo(
     () => (contractPlacementsContact ? getContractPlacements(contractPlacementsContact) : []),
@@ -909,7 +961,11 @@ export function OrgChartWorkspace() {
                   </button>
                 </div>
                 <div className="profile-image-editor">
-                  <img alt="" src={profilePhoto} />
+                  {selectedContactProfileImage ? (
+                    <img alt="" src={selectedContactProfileImage} />
+                  ) : (
+                    <ProfilePlaceholderIllustration className="profile-editor-placeholder" />
+                  )}
                   <button type="button">Change Profile image</button>
                 </div>
                 <div className="drawer-identity">
@@ -971,7 +1027,11 @@ export function OrgChartWorkspace() {
               </>
             ) : (
               <>
-                <img className="drawer-avatar" alt="" src={profilePhoto} />
+                {selectedContactProfileImage ? (
+                  <img className="drawer-avatar" alt="" src={selectedContactProfileImage} />
+                ) : (
+                  <ProfilePlaceholderIllustration />
+                )}
                 <div className="drawer-identity">
                   <p>{formatContactTitle(selectedContact.title)}</p>
                   <h2>{selectedContact.fullName}</h2>
