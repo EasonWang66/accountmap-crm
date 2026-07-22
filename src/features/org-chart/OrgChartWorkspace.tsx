@@ -1,7 +1,8 @@
 import { Background, Controls, ReactFlow, useNodesState, type Edge, type OnNodesChange } from "@xyflow/react";
-import { Eye, HelpCircle, Info, List, Pencil, Search } from "lucide-react";
-import { useEffect, useMemo } from "react";
-import { chartEdges, chartNodes, contacts } from "../../data/seed";
+import { Eye, HelpCircle, Info, List, Pencil, Plus, Search } from "lucide-react";
+import { useCallback, useEffect, useMemo, useState } from "react";
+import { chartEdges, chartNodes, contacts as seedContacts } from "../../data/seed";
+import type { ChartEdge, Contact } from "../../data/types";
 import { useOrgChartStore } from "../../stores/orgChartStore";
 import { AddCardNode, type AddCardGraphNode } from "./AddCardNode";
 import { PersonNode, type PersonGraphNode } from "./PersonNode";
@@ -22,15 +23,36 @@ export function OrgChartWorkspace() {
   const setEditMode = useOrgChartStore((state) => state.setEditMode);
   const setQuery = useOrgChartStore((state) => state.setQuery);
   const setDraftName = useOrgChartStore((state) => state.setDraftName);
+  const selectPerson = useOrgChartStore((state) => state.selectPerson);
+  const setHoveredPerson = useOrgChartStore((state) => state.setHoveredPerson);
+
+  const [contacts, setContacts] = useState<Contact[]>(seedContacts);
+  const [chartRelationshipEdges, setChartRelationshipEdges] = useState<ChartEdge[]>(chartEdges);
 
   const normalizedQuery = query.trim().toLowerCase();
   const activePersonId = hoveredPersonId ?? selectedPersonId;
   const selectedContact = contacts.find((contact) => contact.id === activePersonId);
 
+  const createPlaceholderContact = useCallback((index: number): Contact => {
+    const metric = 6 + ((index * 5) % 17);
+
+    return {
+      id: `new-contact-${index}`,
+      accountId: "acct-coca-cola",
+      fullName: `New Contact ${index}`,
+      title: "Account Stakeholder",
+      department: "New Relationship",
+      location: "Atlanta, GA",
+      relationshipTags: [`${1 + (index % 9)} C`, `${2 + (index % 8)} FTE`],
+      cardVariant: index % 2 === 0 ? "grey" : "blue",
+      cardMetric: index % 2 === 0 ? undefined : metric
+    };
+  }, []);
+
   const initialNodes = useMemo<PersonGraphNode[]>(
     () =>
       chartNodes.map((node) => {
-        const contact = contacts.find((item) => item.id === node.contactId);
+        const contact = seedContacts.find((item) => item.id === node.contactId);
 
         if (!contact) {
           throw new Error(`Missing contact for node ${node.id}`);
@@ -42,7 +64,8 @@ export function OrgChartWorkspace() {
           position: node.position,
           data: {
             contact,
-            matched: true
+            matched: true,
+            onDeleteContact: () => undefined
           }
         };
       }),
@@ -51,11 +74,114 @@ export function OrgChartWorkspace() {
 
   const [nodes, setNodes, onNodesChange] = useNodesState<PersonGraphNode>(initialNodes);
 
+  const deleteContactNode = useCallback(
+    (nodeId: string) => {
+      setNodes((currentNodes) => {
+        const childMap = new Map<string, string[]>();
+
+        chartRelationshipEdges.forEach((edge) => {
+          childMap.set(edge.sourceNodeId, [...(childMap.get(edge.sourceNodeId) ?? []), edge.targetNodeId]);
+        });
+
+        const nodeIdsToDelete = new Set<string>();
+        const stack = [nodeId];
+
+        while (stack.length > 0) {
+          const currentNodeId = stack.pop();
+
+          if (!currentNodeId || nodeIdsToDelete.has(currentNodeId)) {
+            continue;
+          }
+
+          nodeIdsToDelete.add(currentNodeId);
+          stack.push(...(childMap.get(currentNodeId) ?? []));
+        }
+
+        const contactIdsToDelete = new Set(
+          currentNodes.filter((node) => nodeIdsToDelete.has(node.id)).map((node) => node.data.contact.id)
+        );
+
+        setContacts((currentContacts) => currentContacts.filter((contact) => !contactIdsToDelete.has(contact.id)));
+        setChartRelationshipEdges((currentEdges) =>
+          currentEdges.filter((edge) => !nodeIdsToDelete.has(edge.sourceNodeId) && !nodeIdsToDelete.has(edge.targetNodeId))
+        );
+        selectPerson(undefined);
+        setHoveredPerson(undefined);
+
+        return currentNodes.filter((node) => !nodeIdsToDelete.has(node.id));
+      });
+    },
+    [chartRelationshipEdges, selectPerson, setHoveredPerson, setNodes]
+  );
+
+  const addContactUnderNode = useCallback(
+    (parentNodeId?: string) => {
+      setNodes((currentNodes) => {
+        const parentNode = parentNodeId ? currentNodes.find((node) => node.id === parentNodeId) : undefined;
+        const nextIndex = contacts.length + 1;
+        const newContact = createPlaceholderContact(nextIndex);
+        const siblingCount = parentNodeId
+          ? chartRelationshipEdges.filter((edge) => edge.sourceNodeId === parentNodeId).length
+          : currentNodes.length;
+        const newNodeId = `node-${newContact.id}`;
+        const newPosition = parentNode
+          ? {
+              x: parentNode.position.x + (siblingCount - 0.5) * 170,
+              y: parentNode.position.y + 145
+            }
+          : {
+              x: 520 + siblingCount * 170,
+              y: 520
+            };
+
+        setContacts((currentContacts) => [...currentContacts, newContact]);
+
+        if (parentNodeId) {
+          setChartRelationshipEdges((currentEdges) => [
+            ...currentEdges,
+            {
+              id: `edge-${parentNodeId}-${newNodeId}`,
+              sourceNodeId: parentNodeId,
+              targetNodeId: newNodeId,
+              relationshipType: "reports-to"
+            }
+          ]);
+        }
+
+        selectPerson(newContact.id);
+        setHoveredPerson(newContact.id);
+
+        return [
+          ...currentNodes,
+          {
+            id: newNodeId,
+            type: "person",
+            position: newPosition,
+            data: {
+              contact: newContact,
+              matched: true,
+              onDeleteContact: deleteContactNode
+            }
+          }
+        ];
+      });
+    },
+    [
+      chartRelationshipEdges,
+      contacts.length,
+      createPlaceholderContact,
+      deleteContactNode,
+      selectPerson,
+      setHoveredPerson,
+      setNodes
+    ]
+  );
+
   const leafNodeIds = useMemo(() => {
-    const sourceNodeIds = new Set(chartEdges.map((edge) => edge.sourceNodeId));
+    const sourceNodeIds = new Set(chartRelationshipEdges.map((edge) => edge.sourceNodeId));
 
     return new Set(nodes.filter((node) => !sourceNodeIds.has(node.id)).map((node) => node.id));
-  }, [nodes]);
+  }, [chartRelationshipEdges, nodes]);
 
   const addCardNodes = useMemo<AddCardGraphNode[]>(
     () =>
@@ -72,11 +198,12 @@ export function OrgChartWorkspace() {
                 y: node.position.y + 142
               },
               data: {
+                onAddContact: addContactUnderNode,
                 parentNodeId: node.id
               }
             }))
         : [],
-    [editMode, leafNodeIds, nodes]
+    [addContactUnderNode, editMode, leafNodeIds, nodes]
   );
 
   const flowNodes = useMemo<ChartFlowNode[]>(
@@ -98,16 +225,17 @@ export function OrgChartWorkspace() {
           ...node,
           data: {
             ...node.data,
-            matched
+            matched,
+            onDeleteContact: deleteContactNode
           }
         };
       })
     );
-  }, [normalizedQuery, setNodes]);
+  }, [deleteContactNode, normalizedQuery, setNodes]);
 
   const edges = useMemo<Edge[]>(
     () => {
-      const hierarchyEdges = chartEdges.map((edge) => ({
+      const hierarchyEdges = chartRelationshipEdges.map((edge) => ({
         id: edge.id,
         source: edge.sourceNodeId,
         target: edge.targetNodeId,
@@ -131,7 +259,7 @@ export function OrgChartWorkspace() {
 
       return [...hierarchyEdges, ...addEdges];
     },
-    [addCardNodes, editMode]
+    [addCardNodes, chartRelationshipEdges, editMode]
   );
 
   return (
@@ -146,6 +274,12 @@ export function OrgChartWorkspace() {
             {editMode ? null : <Pencil size={15} aria-hidden="true" />}
             {editMode ? "Save Changes" : "Edit"}
           </button>
+          {editMode ? (
+            <button className="add-contact-button" onClick={() => addContactUnderNode()} type="button">
+              <Plus size={15} aria-hidden="true" />
+              Add Contact
+            </button>
+          ) : null}
           <button className="icon-button" aria-label="Recent changes" disabled={editMode} type="button">
             <HelpCircle size={15} />
           </button>

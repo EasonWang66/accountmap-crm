@@ -6,6 +6,7 @@ export type PersonNodeData = {
   [key: string]: unknown;
   contact: Contact;
   matched: boolean;
+  onDeleteContact: (nodeId: string) => void;
 };
 
 export type PersonGraphNode = Node<PersonNodeData, "person">;
@@ -34,7 +35,7 @@ function LinkedinGlyph() {
   );
 }
 
-export function PersonNode({ data }: NodeProps<PersonGraphNode>) {
+export function PersonNode({ data, id }: NodeProps<PersonGraphNode>) {
   const hoveredPersonId = useOrgChartStore((state) => state.hoveredPersonId);
   const editMode = useOrgChartStore((state) => state.editMode);
   const setHoveredPerson = useOrgChartStore((state) => state.setHoveredPerson);
@@ -53,7 +54,23 @@ export function PersonNode({ data }: NodeProps<PersonGraphNode>) {
     >
       <Handle className="node-handle" position={Position.Top} type="target" />
       {editMode ? (
-        <span className="edit-remove-indicator" aria-hidden="true">
+        <span
+          className="edit-remove-indicator"
+          aria-label={`Delete ${data.contact.fullName}`}
+          onClick={(event) => {
+            event.stopPropagation();
+            data.onDeleteContact(String(id));
+          }}
+          role="button"
+          tabIndex={0}
+          onKeyDown={(event) => {
+            if (event.key === "Enter" || event.key === " ") {
+              event.preventDefault();
+              event.stopPropagation();
+              data.onDeleteContact(String(id));
+            }
+          }}
+        >
           -
         </span>
       ) : null}

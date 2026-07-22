@@ -303,6 +303,7 @@ button {
 
 .primary-button,
 .save-button,
+.add-contact-button,
 .secondary-button,
 .icon-button {
   display: inline-flex;
@@ -318,6 +319,7 @@ button {
 
 .primary-button,
 .save-button,
+.add-contact-button,
 .icon-button {
   background: #176b91;
   color: white;
@@ -333,6 +335,12 @@ button {
   padding: 0 14px;
   border-color: #176b91;
   font-size: 14px;
+}
+
+.add-contact-button {
+  min-width: 122px;
+  padding: 0 12px;
+  border-color: #176b91;
 }
 
 .primary-button.active {
