@@ -962,6 +962,21 @@ button {
   transition: transform 160ms ease;
 }
 
+.contract-placements-drawer {
+  position: fixed;
+  top: 0;
+  right: 0;
+  z-index: 21;
+  width: min(390px, 94vw);
+  height: 100vh;
+  overflow: hidden;
+  background: #ffffff;
+  color: #050505;
+  box-shadow: -18px 0 36px rgb(15 23 42 / 18%);
+  transform: translateX(105%);
+  transition: transform 160ms ease;
+}
+
 .contact-list-drawer {
   position: fixed;
   top: 0;
@@ -982,6 +997,10 @@ button {
 }
 
 .activity-timeline-drawer.open {
+  transform: translateX(0);
+}
+
+.contract-placements-drawer.open {
   transform: translateX(0);
 }
 
@@ -1016,6 +1035,39 @@ button {
   padding: 82px 34px 44px;
 }
 
+.contract-placements-content {
+  position: relative;
+  display: grid;
+  align-content: start;
+  gap: 26px;
+  height: 100%;
+  overflow-y: auto;
+  padding: 42px 32px 44px;
+}
+
+.placement-panel-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  min-height: 38px;
+}
+
+.placement-back-button {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  border: 0;
+  background: transparent;
+  color: #050505;
+  padding: 0;
+  font-size: 22px;
+  font-weight: 800;
+}
+
+.placement-panel-header .drawer-close {
+  position: static;
+}
+
 .version-history-content h2 {
   margin: 0 0 32px;
   font-size: 28px;
@@ -1026,6 +1078,96 @@ button {
   margin: 0;
   font-size: 28px;
   line-height: 1.1;
+}
+
+.contract-placements-content > h2 {
+  margin: 0;
+  font-size: 28px;
+  line-height: 1.1;
+}
+
+.placement-detail-view {
+  display: grid;
+  justify-items: center;
+  gap: 24px;
+}
+
+.contractor-illustration {
+  width: 172px;
+  height: 172px;
+}
+
+.placement-identity {
+  display: grid;
+  justify-items: center;
+  gap: 8px;
+  text-align: center;
+}
+
+.placement-identity h2,
+.placement-identity p {
+  margin: 0;
+}
+
+.placement-identity h2 {
+  font-size: 30px;
+  line-height: 1.1;
+}
+
+.placement-identity p {
+  font-size: 24px;
+  font-style: italic;
+  line-height: 1.15;
+}
+
+.placement-contact-list {
+  margin: 8px 0 10px;
+}
+
+.placement-detail-section {
+  display: grid;
+  gap: 12px;
+  width: min(280px, 100%);
+  justify-self: center;
+}
+
+.placement-detail-section h3 {
+  margin: 0;
+  font-size: 18px;
+  line-height: 1.1;
+}
+
+.placement-chip-list {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+}
+
+.placement-chip-list span {
+  border: 1.5px solid #176b91;
+  border-radius: 999px;
+  background: #eef8fc;
+  color: #176b91;
+  padding: 4px 9px;
+  font-size: 15px;
+  font-weight: 800;
+  line-height: 1.1;
+}
+
+.placement-file-button {
+  width: min(280px, 100%);
+  min-height: 54px;
+  margin-top: 26px;
+  border: 0;
+  border-radius: 7px;
+  background: #0d3b52;
+  color: #ffffff;
+  font-size: 16px;
+  font-weight: 800;
+}
+
+.placement-empty-state {
+  margin-top: 70px;
 }
 
 .activity-section {

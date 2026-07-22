@@ -12,6 +12,7 @@ import {
 } from "@xyflow/react";
 import {
   ChevronDown,
+  ChevronLeft,
   ChevronRight,
   Eye,
   History,
@@ -42,6 +43,26 @@ function EmailGlyph({ size = 20 }: { size?: number }) {
   return (
     <svg aria-hidden="true" width={size} height={size} viewBox="0 0 24 24">
       <path d="M3.8 5.7h16.4c.9 0 1.6.7 1.6 1.6v9.4c0 .9-.7 1.6-1.6 1.6H3.8c-.9 0-1.6-.7-1.6-1.6V7.3c0-.9.7-1.6 1.6-1.6Zm.9 2.1L12 12.7l7.3-4.9H4.7Zm15.1 8.4V9.5l-7.1 4.8c-.4.3-.9.3-1.3 0L4.2 9.5v6.7h15.6Z" />
+    </svg>
+  );
+}
+
+function ContractorPlaceholderIllustration() {
+  return (
+    <svg className="contractor-illustration" aria-hidden="true" viewBox="0 0 180 180">
+      <circle cx="90" cy="90" r="88" fill="#e8f3f8" />
+      <circle cx="90" cy="72" r="34" fill="#176b91" opacity="0.9" />
+      <path
+        d="M34 154c8-35 30-53 56-53s48 18 56 53"
+        fill="#ffffff"
+        stroke="#176b91"
+        strokeLinecap="round"
+        strokeLinejoin="round"
+        strokeWidth="10"
+      />
+      <path d="M64 76c12 10 40 10 52 0" fill="none" stroke="#ffffff" strokeLinecap="round" strokeWidth="7" />
+      <circle cx="78" cy="67" r="4" fill="#ffffff" />
+      <circle cx="102" cy="67" r="4" fill="#ffffff" />
     </svg>
   );
 }
@@ -80,6 +101,19 @@ type ActivitySection = {
   items: ActivityItem[];
   title: string;
   variant: "suggested" | "history";
+};
+type ContractPlacement = {
+  degree: string[];
+  education: string[];
+  email: string;
+  id: string;
+  linkedin: string;
+  location: string;
+  name: string;
+  phone: string;
+  placementDate: string;
+  role: string;
+  skillset: string[];
 };
 
 const CARD_WIDTH = 124;
@@ -279,6 +313,45 @@ const getActivityTimeline = (contact: Contact): ActivitySection[] => {
     }
   ];
 };
+const contractorSeed = [
+  ["Edison Lang", "User Experience Designer"],
+  ["Alex Carter", "Analyst"],
+  ["Taylor Dawson", "Product Manager"],
+  ["Cameron Blake", "Data Scientist"],
+  ["Avery Logan", "Software Engineer"],
+  ["Parker James", "Analyst"],
+  ["Quinn Emerson", "Analyst"],
+  ["Shawn Cooper", "Analyst"],
+  ["Dakota Wells", "Machine Learning Engineer"],
+  ["Skylar Reid", "Software Engineer"],
+  ["Sam Kendall", "Data Scientist"],
+  ["Taylor Dawson", "UX Researcher"],
+  ["Cameron Blake", "Analyst"],
+  ["Chris Taylor", "Frontend Engineer"]
+];
+const getContractPlacements = (contact: Contact): ContractPlacement[] => {
+  if (isPlaceholderContact(contact)) {
+    return [];
+  }
+
+  return contractorSeed.map(([name, role], index) => ({
+    id: `${contact.id}-placement-${index}`,
+    name,
+    role,
+    phone: `(321) 888-${String(699 + index).padStart(3, "0")}`,
+    email: `${getContactEmailName(name)}@coca-cola.com`,
+    linkedin: `linkedin.com/in/${getContactSlug(name)}`,
+    location: index % 3 === 0 ? "Remote" : "Atlanta, GA",
+    placementDate: ["December 24th, 2023", "January 18th, 2024", "March 6th, 2024"][index % 3],
+    education: ["Georgia Institute of Technology", index % 2 === 0 ? "University of Georgia" : "Georgia State University"],
+    degree: role.includes("Designer")
+      ? ["MS Human Computer Interaction", "BS Computer Science"]
+      : ["MS Analytics", "BS Information Systems"],
+    skillset: role.includes("Designer")
+      ? ["Figma", "Photoshop", "Marketing", "Indesign", "After Effects", "HTML", "Microsoft 365"]
+      : ["SQL", "Tableau", "Python", "Excel", "React", "Stakeholder Mapping"]
+  }));
+};
 const versionHistory: VersionHistoryMonth[] = [
   {
     month: "September",
@@ -330,6 +403,9 @@ export function OrgChartWorkspace() {
   const [filterPanelOpen, setFilterPanelOpen] = useState(false);
   const [activeFilterIds, setActiveFilterIds] = useState<string[]>([]);
   const [activityTimelineContact, setActivityTimelineContact] = useState<Contact | undefined>(undefined);
+  const [contractPlacementsContact, setContractPlacementsContact] = useState<Contact | undefined>(undefined);
+  const [selectedPlacement, setSelectedPlacement] = useState<ContractPlacement | undefined>(undefined);
+  const [placementQuery, setPlacementQuery] = useState("");
   const pendingConnectionRef = useRef<PendingConnection | undefined>(undefined);
   const nextContactIndexRef = useRef(seedContacts.length + 1);
 
@@ -342,6 +418,21 @@ export function OrgChartWorkspace() {
       ? selectedContactBio
       : `${selectedContactBio.slice(0, 230)}...`;
   const activityTimelineSections = activityTimelineContact ? getActivityTimeline(activityTimelineContact) : [];
+  const contractPlacements = useMemo(
+    () => (contractPlacementsContact ? getContractPlacements(contractPlacementsContact) : []),
+    [contractPlacementsContact]
+  );
+  const filteredContractPlacements = useMemo(() => {
+    const normalizedPlacementQuery = placementQuery.trim().toLowerCase();
+
+    if (!normalizedPlacementQuery) {
+      return contractPlacements;
+    }
+
+    return contractPlacements.filter((placement) =>
+      [placement.name, placement.role, placement.email, placement.location].join(" ").toLowerCase().includes(normalizedPlacementQuery)
+    );
+  }, [contractPlacements, placementQuery]);
   const createPlaceholderContact = useCallback((index: number): Contact => {
     return {
       id: `new-contact-${index}`,
@@ -652,6 +743,8 @@ export function OrgChartWorkspace() {
                 setContactListPanelOpen(false);
                 setFilterPanelOpen(false);
                 setActivityTimelineContact(undefined);
+                setContractPlacementsContact(undefined);
+                setSelectedPlacement(undefined);
               }
             }}
             type="button"
@@ -674,6 +767,8 @@ export function OrgChartWorkspace() {
               setContactListPanelOpen(false);
               setFilterPanelOpen(false);
               setActivityTimelineContact(undefined);
+              setContractPlacementsContact(undefined);
+              setSelectedPlacement(undefined);
               selectPerson(undefined);
               setHoveredPerson(undefined);
             }}
@@ -690,6 +785,8 @@ export function OrgChartWorkspace() {
               setVersionPanelOpen(false);
               setFilterPanelOpen(false);
               setActivityTimelineContact(undefined);
+              setContractPlacementsContact(undefined);
+              setSelectedPlacement(undefined);
               selectPerson(undefined);
               setHoveredPerson(undefined);
             }}
@@ -708,6 +805,8 @@ export function OrgChartWorkspace() {
                 setVersionPanelOpen(false);
                 setContactListPanelOpen(false);
                 setActivityTimelineContact(undefined);
+                setContractPlacementsContact(undefined);
+                setSelectedPlacement(undefined);
                 selectPerson(undefined);
                 setHoveredPerson(undefined);
               }}
@@ -787,10 +886,10 @@ export function OrgChartWorkspace() {
         </ReactFlow>
       </div>
       <aside
-        className={`${selectedContact && !versionPanelOpen && !contactListPanelOpen ? "person-drawer open" : "person-drawer"} ${editMode ? "edit-drawer" : ""}`}
+        className={`${selectedContact && !versionPanelOpen && !contactListPanelOpen && !contractPlacementsContact ? "person-drawer open" : "person-drawer"} ${editMode ? "edit-drawer" : ""}`}
         aria-label="Selected person details"
       >
-        {selectedContact && !versionPanelOpen && !contactListPanelOpen ? (
+        {selectedContact && !versionPanelOpen && !contactListPanelOpen && !contractPlacementsContact ? (
           <div className="drawer-content">
             <button
               aria-label="Close contact details"
@@ -908,6 +1007,8 @@ export function OrgChartWorkspace() {
                       setVersionPanelOpen(false);
                       setContactListPanelOpen(false);
                       setFilterPanelOpen(false);
+                      setContractPlacementsContact(undefined);
+                      setSelectedPlacement(undefined);
                       selectPerson(undefined);
                       setHoveredPerson(undefined);
                     }}
@@ -915,7 +1016,22 @@ export function OrgChartWorkspace() {
                   >
                     Activity Timeline
                   </button>
-                  <button type="button">Contract Placements</button>
+                  <button
+                    onClick={() => {
+                      setContractPlacementsContact(selectedContact);
+                      setSelectedPlacement(undefined);
+                      setPlacementQuery("");
+                      setActivityTimelineContact(undefined);
+                      setVersionPanelOpen(false);
+                      setContactListPanelOpen(false);
+                      setFilterPanelOpen(false);
+                      selectPerson(undefined);
+                      setHoveredPerson(undefined);
+                    }}
+                    type="button"
+                  >
+                    Contract Placements
+                  </button>
                 </div>
                 {selectedContact.cardVariant === "grey" ? (
                   <button className="add-to-leads-button" type="button">
@@ -992,6 +1108,140 @@ export function OrgChartWorkspace() {
                   </div>
                 </section>
               ))
+            )}
+          </div>
+        ) : null}
+      </aside>
+      <aside
+        className={contractPlacementsContact ? "contract-placements-drawer open" : "contract-placements-drawer"}
+        aria-label="Contract placements"
+      >
+        {contractPlacementsContact ? (
+          <div className="contract-placements-content">
+            <div className="placement-panel-header">
+              <button
+                className="placement-back-button"
+                onClick={() => {
+                  if (selectedPlacement) {
+                    setSelectedPlacement(undefined);
+                  } else {
+                    setContractPlacementsContact(undefined);
+                  }
+                }}
+                type="button"
+              >
+                <ChevronLeft size={28} aria-hidden="true" />
+                Back
+              </button>
+              <button
+                aria-label="Close contract placements"
+                className="drawer-close"
+                onClick={() => {
+                  setContractPlacementsContact(undefined);
+                  setSelectedPlacement(undefined);
+                }}
+                type="button"
+              >
+                <X size={24} aria-hidden="true" />
+              </button>
+            </div>
+            {selectedPlacement ? (
+              <div className="placement-detail-view">
+                <ContractorPlaceholderIllustration />
+                <div className="placement-identity">
+                  <h2>{selectedPlacement.name}</h2>
+                  <p>{selectedPlacement.role}</p>
+                </div>
+                <div className="drawer-contact-list placement-contact-list">
+                  <div>
+                    <Phone size={20} aria-hidden="true" />
+                    <span>{selectedPlacement.phone}</span>
+                  </div>
+                  <div>
+                    <EmailGlyph size={20} />
+                    <span>{selectedPlacement.email}</span>
+                  </div>
+                  <div>
+                    <Linkedin size={20} aria-hidden="true" />
+                    <span>{selectedPlacement.linkedin}</span>
+                  </div>
+                  <div>
+                    <MapPin size={20} aria-hidden="true" />
+                    <span>{selectedPlacement.location}</span>
+                  </div>
+                </div>
+                <div className="placement-detail-section">
+                  <h3>Placement Date</h3>
+                  <div className="placement-chip-list">
+                    <span>{selectedPlacement.placementDate}</span>
+                  </div>
+                </div>
+                <div className="placement-detail-section">
+                  <h3>Education</h3>
+                  <div className="placement-chip-list">
+                    {selectedPlacement.education.map((item) => (
+                      <span key={item}>{item}</span>
+                    ))}
+                  </div>
+                </div>
+                <div className="placement-detail-section">
+                  <h3>Degree</h3>
+                  <div className="placement-chip-list">
+                    {selectedPlacement.degree.map((item) => (
+                      <span key={item}>{item}</span>
+                    ))}
+                  </div>
+                </div>
+                <div className="placement-detail-section">
+                  <h3>Skillset</h3>
+                  <div className="placement-chip-list">
+                    {selectedPlacement.skillset.map((item) => (
+                      <span key={item}>{item}</span>
+                    ))}
+                  </div>
+                </div>
+                <button className="placement-file-button" type="button">
+                  View Contract File
+                </button>
+              </div>
+            ) : (
+              <>
+                <h2>Contract Placements</h2>
+                <label className="contact-list-search">
+                  <span className="sr-only">Search for contract</span>
+                  <input
+                    onChange={(event) => setPlacementQuery(event.target.value)}
+                    placeholder="Search for contract"
+                    type="search"
+                    value={placementQuery}
+                  />
+                  <Search size={22} aria-hidden="true" />
+                </label>
+                {contractPlacements.length === 0 ? (
+                  <div className="activity-empty-state placement-empty-state">
+                    <Users size={30} aria-hidden="true" />
+                    <h3>No placements yet</h3>
+                    <p>Published contract placements will appear here once this contact has active contractors.</p>
+                  </div>
+                ) : (
+                  <div className="contact-list-items">
+                    {filteredContractPlacements.map((placement) => (
+                      <button
+                        className="contact-list-item"
+                        key={placement.id}
+                        onClick={() => setSelectedPlacement(placement)}
+                        type="button"
+                      >
+                        <span>
+                          <strong>{placement.name}</strong>
+                          <em>{placement.role}</em>
+                        </span>
+                        <ChevronRight size={26} aria-hidden="true" />
+                      </button>
+                    ))}
+                  </div>
+                )}
+              </>
             )}
           </div>
         ) : null}
