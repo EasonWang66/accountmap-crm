@@ -10,7 +10,23 @@ import {
   type OnConnectStart,
   type OnNodesChange
 } from "@xyflow/react";
-import { Eye, HelpCircle, Info, Linkedin, List, Mail, MapPin, Pencil, Phone, Plus, Search, X } from "lucide-react";
+import {
+  ChevronDown,
+  ChevronRight,
+  Eye,
+  History,
+  Info,
+  Linkedin,
+  List,
+  Mail,
+  MapPin,
+  MoreVertical,
+  Pencil,
+  Phone,
+  Plus,
+  Search,
+  X
+} from "lucide-react";
 import { useCallback, useEffect, useMemo, useRef, useState, type MouseEvent as ReactMouseEvent } from "react";
 import profilePhoto from "../../assets/profile-photo.jpg";
 import { chartEdges, chartNodes, contacts as seedContacts } from "../../data/seed";
@@ -29,6 +45,17 @@ type NodePosition = PersonGraphNode["position"];
 type PendingConnection = {
   handleId: string | null;
   nodeId: string;
+};
+type VersionHistoryEntry = {
+  date: string;
+  contributors: Array<{
+    color: "green" | "purple";
+    name: string;
+  }>;
+};
+type VersionHistoryMonth = {
+  entries: VersionHistoryEntry[];
+  month: string;
 };
 
 const CARD_WIDTH = 124;
@@ -144,6 +171,24 @@ const getContactBio = (contact: Contact) => {
 
   return `${contact.fullName} is the ${contact.title.toLowerCase()} for Coca-Cola's enterprise account team, bringing cross-functional experience in stakeholder alignment, account planning, and organizational execution. With a proven track record of improving communication across departments, ${contact.fullName.split(" ")[0]} helps teams identify priorities, remove blockers, and drive relationship momentum across the account.`;
 };
+const versionHistory: VersionHistoryMonth[] = [
+  {
+    month: "September",
+    entries: [
+      { date: "September 19", contributors: [{ color: "green", name: "Warren Hill" }, { color: "purple", name: "Jane Mason" }] },
+      { date: "September 10", contributors: [{ color: "green", name: "Warren Hill" }, { color: "purple", name: "Jane Mason" }] },
+      { date: "September 4", contributors: [{ color: "green", name: "Warren Hill" }, { color: "purple", name: "Jane Mason" }] }
+    ]
+  },
+  {
+    month: "August",
+    entries: [
+      { date: "August 25", contributors: [{ color: "green", name: "Warren Hill" }, { color: "purple", name: "Jane Mason" }] },
+      { date: "August 10", contributors: [{ color: "green", name: "Warren Hill" }, { color: "purple", name: "Jane Mason" }] },
+      { date: "August 2", contributors: [{ color: "green", name: "Warren Hill" }, { color: "purple", name: "Jane Mason" }] }
+    ]
+  }
+];
 
 export function OrgChartWorkspace() {
   const editMode = useOrgChartStore((state) => state.editMode);
@@ -160,6 +205,7 @@ export function OrgChartWorkspace() {
   const [chartRelationshipEdges, setChartRelationshipEdges] = useState<ChartEdge[]>(() =>
     constrainOrgChartEdges(chartEdges)
   );
+  const [versionPanelOpen, setVersionPanelOpen] = useState(false);
   const pendingConnectionRef = useRef<PendingConnection | undefined>(undefined);
   const nextContactIndexRef = useRef(seedContacts.length + 1);
 
@@ -440,15 +486,24 @@ export function OrgChartWorkspace() {
             {editMode ? null : <Pencil size={15} aria-hidden="true" />}
             {editMode ? "Save Changes" : "Edit"}
           </button>
+          <button
+            className="icon-button"
+            aria-label="Version history"
+            onClick={() => {
+              setVersionPanelOpen(true);
+              selectPerson(undefined);
+              setHoveredPerson(undefined);
+            }}
+            type="button"
+          >
+            <History size={17} />
+          </button>
           {editMode ? (
             <button className="add-contact-button" onClick={() => addContactToCanvas()} type="button">
               <Plus size={15} aria-hidden="true" />
               Add Contact
             </button>
           ) : null}
-          <button className="icon-button" aria-label="Recent changes" disabled={editMode} type="button">
-            <HelpCircle size={15} />
-          </button>
           <button className="icon-button" aria-label="List view" disabled={editMode} type="button">
             <List size={15} />
           </button>
@@ -503,10 +558,10 @@ export function OrgChartWorkspace() {
         </ReactFlow>
       </div>
       <aside
-        className={`${selectedContact ? "person-drawer open" : "person-drawer"} ${editMode ? "edit-drawer" : ""}`}
+        className={`${selectedContact && !versionPanelOpen ? "person-drawer open" : "person-drawer"} ${editMode ? "edit-drawer" : ""}`}
         aria-label="Selected person details"
       >
-        {selectedContact ? (
+        {selectedContact && !versionPanelOpen ? (
           <div className="drawer-content">
             <button
               aria-label="Close contact details"
@@ -642,6 +697,52 @@ export function OrgChartWorkspace() {
         ) : (
           <p>Select a person card to inspect account relationships.</p>
         )}
+      </aside>
+      <aside
+        className={versionPanelOpen ? "version-history-drawer open" : "version-history-drawer"}
+        aria-label="Version history"
+      >
+        <div className="version-history-content">
+          <button
+            aria-label="Close version history"
+            className="drawer-close"
+            onClick={() => setVersionPanelOpen(false)}
+            type="button"
+          >
+            <X size={24} aria-hidden="true" />
+          </button>
+          <h2>Version History</h2>
+          {versionHistory.map((month) => (
+            <section className="version-month" key={month.month}>
+              <button className="version-month-toggle" type="button">
+                <span>{month.month.toUpperCase()}</span>
+                <ChevronDown size={18} aria-hidden="true" />
+              </button>
+              <div className="version-entry-list">
+                {month.entries.map((entry) => (
+                  <article className="version-entry" key={entry.date}>
+                    <ChevronRight className="version-entry-arrow" size={20} aria-hidden="true" />
+                    <div>
+                      <h3>{entry.date}</h3>
+                      <p>Current version</p>
+                      <ul>
+                        {entry.contributors.map((contributor) => (
+                          <li key={`${entry.date}-${contributor.name}`}>
+                            <span className={`version-dot ${contributor.color}`} />
+                            {contributor.name}
+                          </li>
+                        ))}
+                      </ul>
+                    </div>
+                    <button className="version-entry-menu" aria-label={`More options for ${entry.date}`} type="button">
+                      <MoreVertical size={18} aria-hidden="true" />
+                    </button>
+                  </article>
+                ))}
+              </div>
+            </section>
+          ))}
+        </div>
       </aside>
     </section>
   );
