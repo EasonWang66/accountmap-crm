@@ -6,10 +6,12 @@ import {
   useNodesState,
   type Edge,
   type OnConnect,
+  type OnConnectEnd,
+  type OnConnectStart,
   type OnNodesChange
 } from "@xyflow/react";
 import { Eye, HelpCircle, Info, List, Pencil, Plus, Search } from "lucide-react";
-import { useCallback, useEffect, useMemo, useRef, useState, type MouseEvent } from "react";
+import { useCallback, useEffect, useMemo, useRef, useState, type MouseEvent as ReactMouseEvent } from "react";
 import { chartEdges, chartNodes, contacts as seedContacts } from "../../data/seed";
 import type { ChartEdge, Contact } from "../../data/types";
 import { useOrgChartStore } from "../../stores/orgChartStore";
@@ -23,6 +25,10 @@ type ChartFlowNode = PersonGraphNode;
 type ConnectionSide = "top" | "right" | "bottom" | "left";
 type ConnectedSides = Record<ConnectionSide, boolean>;
 type NodePosition = PersonGraphNode["position"];
+type PendingConnection = {
+  handleId: string | null;
+  nodeId: string;
+};
 
 const CARD_WIDTH = 124;
 const CARD_HEIGHT = 88;
@@ -45,6 +51,61 @@ const getConnectionSide = (node: PersonGraphNode, connectedNode: PersonGraphNode
 
   return yDistance > 0 ? "bottom" : "top";
 };
+
+const getSideFromHandleId = (handleId?: string | null): ConnectionSide | undefined => {
+  if (!handleId?.startsWith("edit-")) {
+    return undefined;
+  }
+
+  const side = handleId.replace("edit-", "");
+
+  return side === "top" || side === "right" || side === "bottom" || side === "left" ? side : undefined;
+};
+
+const getPointerClientPosition = (event: globalThis.MouseEvent | TouchEvent) => {
+  return "clientX" in event
+    ? {
+        x: event.clientX,
+        y: event.clientY
+      }
+    : {
+        x: event.changedTouches[0].clientX,
+        y: event.changedTouches[0].clientY
+      };
+};
+
+const getNodeIdAtPointer = (event: globalThis.MouseEvent | TouchEvent) => {
+  const pointer = getPointerClientPosition(event);
+  const elementsAtPointer = document.elementsFromPoint(pointer.x, pointer.y);
+  const nodeElement = elementsAtPointer.find((element) => element.matches(".react-flow__node[data-id]"));
+
+  return nodeElement?.getAttribute("data-id") ?? undefined;
+};
+
+const isSideOccupied = (
+  nodeId: string,
+  side: ConnectionSide,
+  currentEdges: ChartEdge[],
+  nodeMap: Map<string, PersonGraphNode>
+) =>
+  currentEdges.some((edge) => {
+    const sourceNode = nodeMap.get(edge.sourceNodeId);
+    const targetNode = nodeMap.get(edge.targetNodeId);
+
+    if (!sourceNode || !targetNode) {
+      return false;
+    }
+
+    if (edge.sourceNodeId === nodeId) {
+      return getConnectionSide(sourceNode, targetNode) === side;
+    }
+
+    if (edge.targetNodeId === nodeId) {
+      return getConnectionSide(targetNode, sourceNode) === side;
+    }
+
+    return false;
+  });
 
 const overlapsExistingNode = (position: NodePosition, existingPosition: NodePosition) => {
   return (
@@ -108,6 +169,7 @@ export function OrgChartWorkspace() {
 
   const [contacts, setContacts] = useState<Contact[]>(seedContacts);
   const [chartRelationshipEdges, setChartRelationshipEdges] = useState<ChartEdge[]>(chartEdges);
+  const pendingConnectionRef = useRef<PendingConnection | undefined>(undefined);
   const nextContactIndexRef = useRef(seedContacts.length + 1);
 
   const normalizedQuery = query.trim().toLowerCase();
@@ -207,33 +269,93 @@ export function OrgChartWorkspace() {
     [createPlaceholderContact, deleteContactNode, selectPerson, setHoveredPerson, setNodes]
   );
 
-  const connectContactNodes = useCallback<OnConnect>(
-    (connection) => {
-      if (!editMode || !connection.source || !connection.target || connection.source === connection.target) {
+  const connectContactNodes = useCallback(
+    (sourceNodeId: string, targetNodeId: string, sourceHandleId?: string | null) => {
+      if (!editMode || sourceNodeId === targetNodeId) {
         return;
       }
 
       setChartRelationshipEdges((currentEdges) => {
-        const alreadyConnected = currentEdges.some(
-          (edge) => edge.sourceNodeId === connection.source && edge.targetNodeId === connection.target
-        );
+        const nodeMap = new Map(nodes.map((node) => [node.id, node]));
+        const sourceNode = nodeMap.get(sourceNodeId);
+        const targetNode = nodeMap.get(targetNodeId);
 
-        if (alreadyConnected) {
+        if (!sourceNode || !targetNode) {
+          return currentEdges;
+        }
+
+        const alreadyConnected = currentEdges.some(
+          (edge) =>
+            (edge.sourceNodeId === sourceNodeId && edge.targetNodeId === targetNodeId) ||
+            (edge.sourceNodeId === targetNodeId && edge.targetNodeId === sourceNodeId)
+        );
+        const sourceSide = getSideFromHandleId(sourceHandleId) ?? getConnectionSide(sourceNode, targetNode);
+        const targetSide = getConnectionSide(targetNode, sourceNode);
+
+        if (
+          alreadyConnected ||
+          isSideOccupied(sourceNodeId, sourceSide, currentEdges, nodeMap) ||
+          isSideOccupied(targetNodeId, targetSide, currentEdges, nodeMap)
+        ) {
           return currentEdges;
         }
 
         return [
           ...currentEdges,
           {
-            id: `edge-${connection.source}-${connection.target}-${Date.now()}`,
-            sourceNodeId: connection.source,
-            targetNodeId: connection.target,
+            id: `edge-${sourceNodeId}-${targetNodeId}-${Date.now()}`,
+            sourceNodeId,
+            targetNodeId,
             relationshipType: "reports-to"
           }
         ];
       });
     },
+    [editMode, nodes]
+  );
+
+  const handleNativeConnect = useCallback<OnConnect>(
+    (connection) => {
+      if (!connection.source || !connection.target) {
+        return;
+      }
+
+      connectContactNodes(connection.source, connection.target, connection.sourceHandle);
+    },
+    [connectContactNodes]
+  );
+
+  const handleConnectStart = useCallback<OnConnectStart>(
+    (_event, params) => {
+      pendingConnectionRef.current =
+        editMode && params.nodeId
+          ? {
+              handleId: params.handleId,
+              nodeId: params.nodeId
+            }
+          : undefined;
+    },
     [editMode]
+  );
+
+  const handleConnectEnd = useCallback<OnConnectEnd>(
+    (event) => {
+      const pendingConnection = pendingConnectionRef.current;
+      pendingConnectionRef.current = undefined;
+
+      if (!pendingConnection) {
+        return;
+      }
+
+      const targetNodeId = getNodeIdAtPointer(event);
+
+      if (!targetNodeId) {
+        return;
+      }
+
+      connectContactNodes(pendingConnection.nodeId, targetNodeId, pendingConnection.handleId);
+    },
+    [connectContactNodes]
   );
 
   const deleteRelationshipEdge = useCallback(
@@ -246,7 +368,7 @@ export function OrgChartWorkspace() {
       setChartRelationshipEdges((currentEdges) => currentEdges.filter((chartEdge) => chartEdge.id !== edge.id));
     },
     [editMode]
-  ) as (event: MouseEvent, edge: Edge) => void;
+  ) as (event: ReactMouseEvent, edge: Edge) => void;
 
   const connectedSideMap = useMemo(() => {
     const nodeMap = new Map(nodes.map((node) => [node.id, node]));
@@ -385,7 +507,9 @@ export function OrgChartWorkspace() {
           nodeTypes={nodeTypes}
           nodesDraggable
           nodesConnectable={editMode}
-          onConnect={connectContactNodes}
+          onConnect={handleNativeConnect}
+          onConnectEnd={handleConnectEnd}
+          onConnectStart={handleConnectStart}
           onEdgeClick={deleteRelationshipEdge}
           onNodesChange={onNodesChange as OnNodesChange<ChartFlowNode>}
           panOnDrag={editMode ? [1] : true}
