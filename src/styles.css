@@ -430,6 +430,30 @@ button {
   outline-offset: 2px;
 }
 
+.pan-tool-panel {
+  margin: 0 0 82px 0;
+}
+
+.pan-tool-button {
+  display: grid;
+  place-items: center;
+  width: 26px;
+  height: 26px;
+  border: 1px solid #d3dbe1;
+  border-radius: 2px;
+  background: #ffffff;
+  color: #60717e;
+  box-shadow: 0 0 2px 1px rgb(0 0 0 / 8%);
+}
+
+.pan-tool-button:hover,
+.pan-tool-button:focus-visible,
+.pan-tool-button.active {
+  border-color: #176b91;
+  background: #176b91;
+  color: #ffffff;
+}
+
 .node-handle,
 .react-flow__handle {
   width: 1px;
@@ -496,10 +520,10 @@ button {
 
 .edit-target-handle,
 .edit-connection-handle {
-  width: 26px;
-  height: 26px;
-  min-width: 26px;
-  min-height: 26px;
+  width: 34px;
+  height: 34px;
+  min-width: 34px;
+  min-height: 34px;
   border-radius: 999px;
 }
 
@@ -512,10 +536,22 @@ button {
 
 .edit-connection-handle {
   z-index: 5;
-  border: 2px solid #129fe3;
-  background: #129fe3;
+  border: 3px solid #ffffff;
+  background: #0a9ff0;
   opacity: 1;
-  box-shadow: 0 1px 4px rgb(18 159 227 / 28%);
+  box-shadow:
+    0 0 0 2px rgb(10 159 240 / 35%),
+    0 3px 8px rgb(13 59 82 / 26%);
+  cursor: crosshair;
+  pointer-events: auto;
+}
+
+.edit-connection-handle:hover,
+.edit-connection-handle:focus-visible {
+  background: #007fc7;
+  box-shadow:
+    0 0 0 4px rgb(10 159 240 / 24%),
+    0 4px 10px rgb(13 59 82 / 30%);
 }
 
 .edit-connection-handle.hidden {
@@ -529,22 +565,22 @@ button {
 
 .edit-target-handle.top,
 .edit-connection-handle.top {
-  top: -14px;
+  top: -17px;
 }
 
 .edit-target-handle.right,
 .edit-connection-handle.right {
-  right: -14px;
+  right: -17px;
 }
 
 .edit-target-handle.bottom,
 .edit-connection-handle.bottom {
-  bottom: -14px;
+  bottom: -17px;
 }
 
 .edit-target-handle.left,
 .edit-connection-handle.left {
-  left: -14px;
+  left: -17px;
 }
 
 .person-tags {

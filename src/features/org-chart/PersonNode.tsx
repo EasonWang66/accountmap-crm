@@ -58,56 +58,72 @@ export function PersonNode({ data, id }: NodeProps<PersonGraphNode>) {
       {editMode ? (
         <>
           <Handle
-            className="edit-target-handle top"
+            className="edit-target-handle nodrag nopan top"
             id="target-top"
             isConnectable={editMode}
             position={Position.Top}
             type="target"
           />
           <Handle
-            className="edit-target-handle right"
+            className="edit-target-handle nodrag nopan right"
             id="target-right"
             isConnectable={editMode}
             position={Position.Right}
             type="target"
           />
           <Handle
-            className="edit-target-handle bottom"
+            className="edit-target-handle nodrag nopan bottom"
             id="target-bottom"
             isConnectable={editMode}
             position={Position.Bottom}
             type="target"
           />
           <Handle
-            className="edit-target-handle left"
+            className="edit-target-handle nodrag nopan left"
             id="target-left"
             isConnectable={editMode}
             position={Position.Left}
             type="target"
           />
           <Handle
-            className={showConnectionHandles ? "edit-connection-handle top" : "edit-connection-handle hidden"}
+            className={
+              showConnectionHandles
+                ? "edit-connection-handle nodrag nopan top"
+                : "edit-connection-handle nodrag nopan hidden"
+            }
             id="edit-top"
             isConnectable={showConnectionHandles}
             position={Position.Top}
             type="source"
           />
           <Handle
-            className={showConnectionHandles ? "edit-connection-handle right" : "edit-connection-handle hidden"}
+            className={
+              showConnectionHandles
+                ? "edit-connection-handle nodrag nopan right"
+                : "edit-connection-handle nodrag nopan hidden"
+            }
             id="edit-right"
             isConnectable={showConnectionHandles}
             position={Position.Right}
             type="source"
           />
           <Handle
-            className={showConnectionHandles ? "edit-connection-handle bottom" : "edit-connection-handle hidden"}
+            className={
+              showConnectionHandles
+                ? "edit-connection-handle nodrag nopan bottom"
+                : "edit-connection-handle nodrag nopan hidden"
+            }
             id="edit-bottom"
             isConnectable={showConnectionHandles}
             position={Position.Bottom}
             type="source"
           />
           <Handle
-            className={showConnectionHandles ? "edit-connection-handle left" : "edit-connection-handle hidden"}
+            className={
+              showConnectionHandles
+                ? "edit-connection-handle nodrag nopan left"
+                : "edit-connection-handle nodrag nopan hidden"
+            }
             id="edit-left"
             isConnectable={showConnectionHandles}
             position={Position.Left}

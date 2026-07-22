@@ -2,13 +2,14 @@ import {
   Background,
   ConnectionMode,
   Controls,
+  Panel,
   ReactFlow,
   useNodesState,
   type Edge,
   type OnConnect,
   type OnNodesChange
 } from "@xyflow/react";
-import { Eye, HelpCircle, Info, List, Pencil, Plus, Search } from "lucide-react";
+import { Eye, Hand, HelpCircle, Info, List, Pencil, Plus, Search } from "lucide-react";
 import { useCallback, useEffect, useMemo, useRef, useState, type MouseEvent } from "react";
 import { chartEdges, chartNodes, contacts as seedContacts } from "../../data/seed";
 import type { ChartEdge, Contact } from "../../data/types";
@@ -37,6 +38,7 @@ export function OrgChartWorkspace() {
 
   const [contacts, setContacts] = useState<Contact[]>(seedContacts);
   const [chartRelationshipEdges, setChartRelationshipEdges] = useState<ChartEdge[]>(chartEdges);
+  const [handToolEnabled, setHandToolEnabled] = useState(false);
   const nextContactIndexRef = useRef(seedContacts.length + 1);
 
   const normalizedQuery = query.trim().toLowerCase();
@@ -247,6 +249,14 @@ export function OrgChartWorkspace() {
     [addCardNodes, editMode, nodes]
   );
 
+  const canvasPanEnabled = editMode ? handToolEnabled : true;
+
+  useEffect(() => {
+    if (!editMode) {
+      setHandToolEnabled(false);
+    }
+  }, [editMode]);
+
   useEffect(() => {
     setNodes((currentNodes) =>
       currentNodes.map((node) => {
@@ -362,10 +372,24 @@ export function OrgChartWorkspace() {
           onConnect={connectContactNodes}
           onEdgeClick={deleteRelationshipEdge}
           onNodesChange={onNodesChange as OnNodesChange<ChartFlowNode>}
-          panOnScroll
+          panOnDrag={canvasPanEnabled}
+          panOnScroll={canvasPanEnabled}
           proOptions={{ hideAttribution: true }}
         >
           <Background color="#d7dee4" gap={22} />
+          {editMode ? (
+            <Panel className="pan-tool-panel" position="bottom-left">
+              <button
+                aria-pressed={handToolEnabled}
+                className={handToolEnabled ? "pan-tool-button active" : "pan-tool-button"}
+                onClick={() => setHandToolEnabled((enabled) => !enabled)}
+                title="Move chart"
+                type="button"
+              >
+                <Hand size={15} aria-hidden="true" />
+              </button>
+            </Panel>
+          ) : null}
           <Controls showInteractive={false} />
         </ReactFlow>
       </div>
