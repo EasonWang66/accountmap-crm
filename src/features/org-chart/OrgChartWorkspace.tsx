@@ -1,6 +1,6 @@
 import { Background, Controls, ReactFlow, useNodesState, type Edge, type OnNodesChange } from "@xyflow/react";
 import { Eye, HelpCircle, Info, List, Pencil, Plus, Search } from "lucide-react";
-import { useCallback, useEffect, useMemo, useState } from "react";
+import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 import { chartEdges, chartNodes, contacts as seedContacts } from "../../data/seed";
 import type { ChartEdge, Contact } from "../../data/types";
 import { useOrgChartStore } from "../../stores/orgChartStore";
@@ -28,6 +28,7 @@ export function OrgChartWorkspace() {
 
   const [contacts, setContacts] = useState<Contact[]>(seedContacts);
   const [chartRelationshipEdges, setChartRelationshipEdges] = useState<ChartEdge[]>(chartEdges);
+  const nextContactIndexRef = useRef(seedContacts.length + 1);
 
   const normalizedQuery = query.trim().toLowerCase();
   const activePersonId = hoveredPersonId ?? selectedPersonId;
@@ -98,7 +99,13 @@ export function OrgChartWorkspace() {
     (parentNodeId?: string) => {
       setNodes((currentNodes) => {
         const parentNode = parentNodeId ? currentNodes.find((node) => node.id === parentNodeId) : undefined;
-        const nextIndex = contacts.length + 1;
+
+        if (parentNodeId && !parentNode) {
+          return currentNodes;
+        }
+
+        const nextIndex = nextContactIndexRef.current;
+        nextContactIndexRef.current += 1;
         const newContact = createPlaceholderContact(nextIndex);
         const siblingCount = parentNodeId
           ? chartRelationshipEdges.filter((edge) => edge.sourceNodeId === parentNodeId).length
@@ -148,7 +155,6 @@ export function OrgChartWorkspace() {
     },
     [
       chartRelationshipEdges,
-      contacts.length,
       createPlaceholderContact,
       deleteContactNode,
       selectPerson,
@@ -301,11 +307,6 @@ export function OrgChartWorkspace() {
           nodes={flowNodes}
           nodeTypes={nodeTypes}
           nodesDraggable
-          onNodeClick={(_, node) => {
-            if (node.type === "addCard") {
-              addContactUnderNode((node as AddCardGraphNode).data.parentNodeId);
-            }
-          }}
           onNodesChange={onNodesChange as OnNodesChange<ChartFlowNode>}
           panOnScroll
           proOptions={{ hideAttribution: true }}
