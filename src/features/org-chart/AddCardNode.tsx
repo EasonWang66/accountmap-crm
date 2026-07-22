@@ -18,7 +18,6 @@ export function AddCardNode({ data }: NodeProps<AddCardGraphNode>) {
         event.stopPropagation();
         data.onAddContact(data.parentNodeId);
       }}
-      onPointerDown={(event) => event.stopPropagation()}
     >
       <Handle className="node-handle" position={Position.Top} type="target" />
       <span aria-hidden="true">+</span>

@@ -301,6 +301,11 @@ export function OrgChartWorkspace() {
           nodes={flowNodes}
           nodeTypes={nodeTypes}
           nodesDraggable
+          onNodeClick={(_, node) => {
+            if (node.type === "addCard") {
+              addContactUnderNode((node as AddCardGraphNode).data.parentNodeId);
+            }
+          }}
           onNodesChange={onNodesChange as OnNodesChange<ChartFlowNode>}
           panOnScroll
           proOptions={{ hideAttribution: true }}
