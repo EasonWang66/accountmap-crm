@@ -556,14 +556,20 @@ export function OrgChartWorkspace() {
                   </label>
                   <textarea defaultValue={selectedContactBio} />
                 </div>
-                <div className="account-manager-card edit-manager-card">
-                  <img alt="" src={profilePhoto} />
-                  <div>
-                    <strong>Leo Young</strong>
-                    <span>Current AM in Charge</span>
+                {selectedContact.cardVariant === "grey" ? (
+                  <button className="add-to-leads-button" type="button">
+                    Add to Leads
+                  </button>
+                ) : (
+                  <div className="account-manager-card edit-manager-card">
+                    <img alt="" src={profilePhoto} />
+                    <div>
+                      <strong>Leo Young</strong>
+                      <span>Current AM in Charge</span>
+                    </div>
+                    <Mail size={22} aria-hidden="true" />
                   </div>
-                  <Mail size={22} aria-hidden="true" />
-                </div>
+                )}
                 <div className="drawer-edit-actions">
                   <button className="secondary-action" type="button">
                     Cancel
@@ -614,15 +620,16 @@ export function OrgChartWorkspace() {
                   <button className="add-to-leads-button" type="button">
                     Add to Leads
                   </button>
-                ) : null}
-                <div className="account-manager-card">
-                  <img alt="" src={profilePhoto} />
-                  <div>
-                    <strong>Leo Young</strong>
-                    <span>Current AM in Charge</span>
+                ) : (
+                  <div className="account-manager-card">
+                    <img alt="" src={profilePhoto} />
+                    <div>
+                      <strong>Leo Young</strong>
+                      <span>Current AM in Charge</span>
+                    </div>
+                    <Mail size={22} aria-hidden="true" />
                   </div>
-                  <Mail size={22} aria-hidden="true" />
-                </div>
+                )}
               </>
             )}
           </div>

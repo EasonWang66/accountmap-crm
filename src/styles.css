@@ -634,7 +634,7 @@ button {
   z-index: 20;
   width: min(360px, 92vw);
   height: 100vh;
-  overflow-y: auto;
+  overflow: hidden;
   background: #ffffff;
   color: #0f172a;
   box-shadow: -18px 0 36px rgb(15 23 42 / 18%);
@@ -654,16 +654,16 @@ button {
 .drawer-content {
   position: relative;
   display: grid;
-  min-height: 100%;
+  height: 100%;
   align-content: start;
-  gap: 24px;
-  padding: 64px 28px 28px;
+  gap: clamp(8px, 1.25vh, 14px);
+  padding: clamp(38px, 5vh, 48px) 28px clamp(12px, 2vh, 20px);
 }
 
 .drawer-close {
   position: absolute;
-  top: 18px;
-  right: 18px;
+  top: 12px;
+  right: 16px;
   display: grid;
   place-items: center;
   width: 34px;
@@ -675,8 +675,8 @@ button {
 }
 
 .drawer-avatar {
-  width: 164px;
-  height: 164px;
+  width: clamp(96px, 15vh, 128px);
+  height: clamp(96px, 15vh, 128px);
   justify-self: center;
   border-radius: 999px;
   object-fit: cover;
@@ -685,7 +685,7 @@ button {
 .drawer-identity {
   display: grid;
   justify-items: center;
-  gap: 8px;
+  gap: clamp(3px, 0.6vh, 5px);
   text-align: center;
 }
 
@@ -695,29 +695,29 @@ button {
 }
 
 .drawer-identity p {
-  font-size: 26px;
+  font-size: clamp(18px, 2.4vh, 21px);
   font-style: italic;
   line-height: 1.1;
 }
 
 .drawer-identity h2 {
-  font-size: 28px;
+  font-size: clamp(20px, 2.8vh, 23px);
   line-height: 1.1;
 }
 
 .drawer-contact-list {
   display: grid;
-  gap: 12px;
+  gap: clamp(5px, 0.8vh, 8px);
   width: min(270px, 100%);
   justify-self: center;
 }
 
 .drawer-contact-list div {
   display: grid;
-  grid-template-columns: 28px 1fr;
+  grid-template-columns: 24px 1fr;
   align-items: center;
   gap: 10px;
-  font-size: 14px;
+  font-size: 13px;
 }
 
 .drawer-contact-list svg,
@@ -734,9 +734,13 @@ button {
 }
 
 .drawer-bio p {
+  display: -webkit-box;
   margin: 0;
-  font-size: 16px;
-  line-height: 1.55;
+  font-size: 14px;
+  line-height: 1.42;
+  overflow: hidden;
+  -webkit-box-orient: vertical;
+  -webkit-line-clamp: 5;
 }
 
 .drawer-bio button {
@@ -746,19 +750,19 @@ button {
   color: #176b91;
   padding: 0;
   text-decoration: underline;
-  font-size: 16px;
+  font-size: 14px;
 }
 
 .drawer-action-stack {
   display: grid;
-  gap: 14px;
+  gap: clamp(7px, 1vh, 9px);
   width: min(280px, 100%);
   justify-self: center;
 }
 
 .drawer-action-stack button,
 .primary-action {
-  min-height: 54px;
+  min-height: clamp(36px, 5vh, 42px);
   border: 0;
   border-radius: 4px;
   background: #0d3b52;
@@ -768,32 +772,32 @@ button {
 
 .add-to-leads-button {
   width: min(280px, 100%);
-  min-height: 56px;
+  min-height: clamp(40px, 5.4vh, 46px);
   justify-self: center;
   border: 2px solid #0d3b52;
   border-radius: 5px;
   background: #eef3f6;
   color: #0d3b52;
-  font-size: 18px;
+  font-size: 17px;
   font-weight: 800;
 }
 
 .account-manager-card {
   display: grid;
-  grid-template-columns: 42px 1fr 34px;
+  grid-template-columns: 36px 1fr 30px;
   align-items: center;
   gap: 10px;
   width: min(280px, 100%);
   justify-self: center;
   border-radius: 6px;
   background: #f4f6f8;
-  padding: 10px;
+  padding: 8px;
   color: #0d3b52;
 }
 
 .account-manager-card img {
-  width: 42px;
-  height: 42px;
+  width: 36px;
+  height: 36px;
   border-radius: 999px;
   object-fit: cover;
 }
@@ -804,12 +808,12 @@ button {
 }
 
 .account-manager-card strong {
-  font-size: 18px;
+  font-size: 16px;
   line-height: 1.1;
 }
 
 .account-manager-card span {
-  margin-top: 3px;
+  margin-top: 2px;
   color: #6b7280;
   font-size: 12px;
   font-style: italic;
@@ -831,12 +835,12 @@ button {
 
 .edit-drawer-header h2 {
   margin: 0;
-  font-size: 26px;
+  font-size: clamp(22px, 3vh, 24px);
 }
 
 .remove-account-button,
 .secondary-action {
-  min-height: 34px;
+  min-height: clamp(30px, 4vh, 34px);
   border: 1.5px solid #176b91;
   border-radius: 3px;
   background: #ffffff;
@@ -850,13 +854,13 @@ button {
   display: grid;
   place-items: center;
   justify-self: center;
-  width: 184px;
-  height: 184px;
+  width: clamp(104px, 16vh, 136px);
+  height: clamp(104px, 16vh, 136px);
 }
 
 .profile-image-editor img {
-  width: 184px;
-  height: 184px;
+  width: clamp(104px, 16vh, 136px);
+  height: clamp(104px, 16vh, 136px);
   border-radius: 999px;
   filter: grayscale(1);
   object-fit: cover;
@@ -865,7 +869,7 @@ button {
 
 .profile-image-editor button {
   position: absolute;
-  min-height: 38px;
+  min-height: clamp(30px, 4.4vh, 34px);
   border: 0;
   border-radius: 4px;
   background: #176b91;
@@ -879,20 +883,20 @@ button {
   border: 0;
   background: transparent;
   text-align: center;
-  font-size: 26px;
+  font-size: clamp(18px, 2.6vh, 22px);
   font-style: italic;
   outline: 0;
 }
 
 .drawer-inline-field.name-field input {
-  font-size: 28px;
+  font-size: clamp(20px, 3vh, 24px);
   font-style: normal;
   font-weight: 800;
 }
 
 .drawer-edit-fields {
   display: grid;
-  gap: 10px;
+  gap: clamp(5px, 0.8vh, 8px);
   width: min(300px, 100%);
   justify-self: center;
 }
@@ -901,7 +905,7 @@ button {
   display: grid;
   grid-template-columns: 34px 1fr;
   align-items: center;
-  min-height: 40px;
+  min-height: clamp(31px, 4.4vh, 36px);
   border: 1.5px solid #7b7b7b;
   border-radius: 3px;
   padding: 0 10px;
@@ -918,12 +922,12 @@ button {
 }
 
 .drawer-edit-fields textarea {
-  min-height: 260px;
+  min-height: clamp(92px, 17vh, 150px);
   border: 1.5px solid #7b7b7b;
   border-radius: 3px;
-  padding: 14px;
+  padding: 10px;
   resize: vertical;
-  line-height: 1.65;
+  line-height: 1.45;
 }
 
 .edit-manager-card {
@@ -936,16 +940,16 @@ button {
   align-items: center;
   justify-content: space-between;
   gap: 16px;
-  margin-top: 32px;
+  margin-top: clamp(2px, 1vh, 8px);
 }
 
 .drawer-edit-actions button {
   min-width: 76px;
-  min-height: 38px;
+  min-height: clamp(34px, 4.8vh, 38px);
 }
 
 .drawer-edit-actions .primary-action {
-  min-height: 38px;
+  min-height: clamp(34px, 4.8vh, 38px);
   padding: 0 18px;
 }
 
