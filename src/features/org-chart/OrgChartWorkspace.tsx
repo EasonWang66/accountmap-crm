@@ -25,6 +25,7 @@ import {
   Phone,
   Plus,
   Search,
+  Users,
   X
 } from "lucide-react";
 import { useCallback, useEffect, useMemo, useRef, useState, type MouseEvent as ReactMouseEvent } from "react";
@@ -61,6 +62,17 @@ type FilterOption = {
   id: string;
   label: string;
   matches: (contact: Contact) => boolean;
+};
+type ActivityItem = {
+  icon: "call" | "email" | "people";
+  subtitle: string;
+  time: string;
+  title: string;
+};
+type ActivitySection = {
+  items: ActivityItem[];
+  title: string;
+  variant: "suggested" | "history";
 };
 
 const CARD_WIDTH = 124;
@@ -176,6 +188,90 @@ const getContactBio = (contact: Contact) => {
 
   return `${contact.fullName} is the ${contact.title.toLowerCase()} for Coca-Cola's enterprise account team, bringing cross-functional experience in stakeholder alignment, account planning, and organizational execution. With a proven track record of improving communication across departments, ${contact.fullName.split(" ")[0]} helps teams identify priorities, remove blockers, and drive relationship momentum across the account.`;
 };
+const formatContactTitle = (title: string) => title.replace("Chief Executive Officer", "CEO");
+const getActivityTimeline = (contact: Contact): ActivitySection[] => {
+  if (isPlaceholderContact(contact)) {
+    return [];
+  }
+
+  const firstName = contact.fullName.split(" ")[0];
+  const shortTitle = formatContactTitle(contact.title);
+
+  return [
+    {
+      title: "Suggested Next Steps",
+      variant: "suggested",
+      items: [
+        {
+          icon: "people",
+          title: `Set up in person meeting with ${firstName}`,
+          time: "3:30 pm",
+          subtitle: "Client acquisition meeting"
+        },
+        {
+          icon: "email",
+          title: `Follow up with ${firstName}`,
+          time: "2:30 pm",
+          subtitle: "Contract set up"
+        },
+        {
+          icon: "people",
+          title: `${contact.fullName} ${shortTitle}`,
+          time: "1:00 pm",
+          subtitle: "Lunch meeting"
+        }
+      ]
+    },
+    {
+      title: "Today, Sept. 12, 2024",
+      variant: "history",
+      items: [
+        {
+          icon: "call",
+          title: `${contact.fullName} ${shortTitle}`,
+          time: "3:30 pm",
+          subtitle: "Client acquisition meeting"
+        },
+        {
+          icon: "email",
+          title: `${contact.fullName} ${shortTitle}`,
+          time: "2:30 pm",
+          subtitle: "Contract Set up"
+        },
+        {
+          icon: "people",
+          title: `${contact.fullName} ${shortTitle}`,
+          time: "1:00 pm",
+          subtitle: "Lunch Meeting"
+        }
+      ]
+    },
+    {
+      title: "September 11, 2024",
+      variant: "history",
+      items: [
+        {
+          icon: "call",
+          title: `${contact.fullName} ${shortTitle}`,
+          time: "3:30 pm",
+          subtitle: "Contract Set up"
+        },
+        {
+          icon: "email",
+          title: `${contact.fullName} ${shortTitle}`,
+          time: "2:30 pm",
+          subtitle: "Client acquisition meeting"
+        },
+        {
+          icon: "people",
+          title: `${contact.fullName} ${shortTitle}`,
+          time: "1:00 pm",
+          subtitle: "Lunch Meeting"
+        }
+      ]
+    }
+  ];
+};
 const versionHistory: VersionHistoryMonth[] = [
   {
     month: "September",
@@ -226,6 +322,7 @@ export function OrgChartWorkspace() {
   const [contactListQuery, setContactListQuery] = useState("");
   const [filterPanelOpen, setFilterPanelOpen] = useState(false);
   const [activeFilterIds, setActiveFilterIds] = useState<string[]>([]);
+  const [activityTimelineContact, setActivityTimelineContact] = useState<Contact | undefined>(undefined);
   const pendingConnectionRef = useRef<PendingConnection | undefined>(undefined);
   const nextContactIndexRef = useRef(seedContacts.length + 1);
 
@@ -237,6 +334,7 @@ export function OrgChartWorkspace() {
     selectedContact && isPlaceholderContact(selectedContact)
       ? selectedContactBio
       : `${selectedContactBio.slice(0, 230)}...`;
+  const activityTimelineSections = activityTimelineContact ? getActivityTimeline(activityTimelineContact) : [];
   const createPlaceholderContact = useCallback((index: number): Contact => {
     return {
       id: `new-contact-${index}`,
@@ -546,6 +644,7 @@ export function OrgChartWorkspace() {
                 setVersionPanelOpen(false);
                 setContactListPanelOpen(false);
                 setFilterPanelOpen(false);
+                setActivityTimelineContact(undefined);
               }
             }}
             type="button"
@@ -567,6 +666,7 @@ export function OrgChartWorkspace() {
               setVersionPanelOpen(true);
               setContactListPanelOpen(false);
               setFilterPanelOpen(false);
+              setActivityTimelineContact(undefined);
               selectPerson(undefined);
               setHoveredPerson(undefined);
             }}
@@ -582,6 +682,7 @@ export function OrgChartWorkspace() {
               setContactListPanelOpen(true);
               setVersionPanelOpen(false);
               setFilterPanelOpen(false);
+              setActivityTimelineContact(undefined);
               selectPerson(undefined);
               setHoveredPerson(undefined);
             }}
@@ -599,6 +700,7 @@ export function OrgChartWorkspace() {
                 setFilterPanelOpen((isOpen) => !isOpen);
                 setVersionPanelOpen(false);
                 setContactListPanelOpen(false);
+                setActivityTimelineContact(undefined);
                 selectPerson(undefined);
                 setHoveredPerson(undefined);
               }}
@@ -767,7 +869,7 @@ export function OrgChartWorkspace() {
               <>
                 <img className="drawer-avatar" alt="" src={profilePhoto} />
                 <div className="drawer-identity">
-                  <p>{selectedContact.title.replace("Chief Executive Officer", "CEO")}</p>
+                  <p>{formatContactTitle(selectedContact.title)}</p>
                   <h2>{selectedContact.fullName}</h2>
                 </div>
                 <div className="drawer-contact-list">
@@ -793,9 +895,20 @@ export function OrgChartWorkspace() {
                   <button type="button">see more</button>
                 </div>
                 <div className="drawer-action-stack">
-                  <button type="button">View Activity Timeline</button>
-                  <button type="button">View Contract Placements</button>
-                  <button type="button">View Similar Contracts</button>
+                  <button
+                    onClick={() => {
+                      setActivityTimelineContact(selectedContact);
+                      setVersionPanelOpen(false);
+                      setContactListPanelOpen(false);
+                      setFilterPanelOpen(false);
+                      selectPerson(undefined);
+                      setHoveredPerson(undefined);
+                    }}
+                    type="button"
+                  >
+                    Activity Timeline
+                  </button>
+                  <button type="button">Contract Placements</button>
                 </div>
                 {selectedContact.cardVariant === "grey" ? (
                   <button className="add-to-leads-button" type="button">
@@ -817,6 +930,60 @@ export function OrgChartWorkspace() {
         ) : (
           <p>Select a person card to inspect account relationships.</p>
         )}
+      </aside>
+      <aside
+        className={activityTimelineContact ? "activity-timeline-drawer open" : "activity-timeline-drawer"}
+        aria-label="Activity timeline"
+      >
+        {activityTimelineContact ? (
+          <div className="activity-timeline-content">
+            <button
+              aria-label="Close activity timeline"
+              className="drawer-close"
+              onClick={() => setActivityTimelineContact(undefined)}
+              type="button"
+            >
+              <X size={24} aria-hidden="true" />
+            </button>
+            <h2>Activity Timeline</h2>
+            {activityTimelineSections.length === 0 ? (
+              <div className="activity-empty-state">
+                <Users size={30} aria-hidden="true" />
+                <h3>No activity yet</h3>
+                <p>Save this contact and begin logging meetings, calls, and follow-ups to build a timeline.</p>
+              </div>
+            ) : (
+              activityTimelineSections.map((section) => (
+                <section className={`activity-section ${section.variant}`} key={section.title}>
+                  <h3>
+                    <ChevronDown size={22} aria-hidden="true" />
+                    {section.title}
+                  </h3>
+                  <div className="activity-item-list">
+                    {section.items.map((item) => {
+                      const ActivityIcon = item.icon === "call" ? Phone : item.icon === "email" ? Mail : Users;
+
+                      return (
+                        <article className="activity-item" key={`${section.title}-${item.title}-${item.time}`}>
+                          <span className="activity-icon">
+                            <ActivityIcon size={17} aria-hidden="true" />
+                          </span>
+                          <div className="activity-card">
+                            <strong>{item.title}</strong>
+                            <p>
+                              <span>{item.time}</span>
+                              <em>{item.subtitle}</em>
+                            </p>
+                          </div>
+                        </article>
+                      );
+                    })}
+                  </div>
+                </section>
+              ))
+            )}
+          </div>
+        ) : null}
       </aside>
       <aside
         className={versionPanelOpen ? "version-history-drawer open" : "version-history-drawer"}
@@ -901,7 +1068,7 @@ export function OrgChartWorkspace() {
               >
                 <span>
                   <strong>{contact.fullName}</strong>
-                  <em>{contact.title.replace("Chief Executive Officer", "CEO")}</em>
+                  <em>{formatContactTitle(contact.title)}</em>
                 </span>
                 <ChevronRight size={26} aria-hidden="true" />
               </button>

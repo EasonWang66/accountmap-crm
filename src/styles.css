@@ -947,6 +947,21 @@ button {
   transition: transform 160ms ease;
 }
 
+.activity-timeline-drawer {
+  position: fixed;
+  top: 0;
+  right: 0;
+  z-index: 21;
+  width: min(390px, 94vw);
+  height: 100vh;
+  overflow: hidden;
+  background: #ffffff;
+  color: #050505;
+  box-shadow: -18px 0 36px rgb(15 23 42 / 18%);
+  transform: translateX(105%);
+  transition: transform 160ms ease;
+}
+
 .contact-list-drawer {
   position: fixed;
   top: 0;
@@ -963,6 +978,10 @@ button {
 }
 
 .version-history-drawer.open {
+  transform: translateX(0);
+}
+
+.activity-timeline-drawer.open {
   transform: translateX(0);
 }
 
@@ -987,10 +1006,152 @@ button {
   padding: 82px 32px 36px;
 }
 
+.activity-timeline-content {
+  position: relative;
+  display: grid;
+  align-content: start;
+  gap: 30px;
+  height: 100%;
+  overflow-y: auto;
+  padding: 82px 34px 44px;
+}
+
 .version-history-content h2 {
   margin: 0 0 32px;
   font-size: 28px;
   line-height: 1.1;
+}
+
+.activity-timeline-content h2 {
+  margin: 0;
+  font-size: 28px;
+  line-height: 1.1;
+}
+
+.activity-section {
+  display: grid;
+  gap: 20px;
+}
+
+.activity-section h3 {
+  display: flex;
+  align-items: center;
+  gap: 14px;
+  margin: 0;
+  font-size: 20px;
+  line-height: 1.1;
+}
+
+.activity-section.suggested h3 {
+  font-style: italic;
+}
+
+.activity-item-list {
+  position: relative;
+  display: grid;
+  gap: 28px;
+}
+
+.activity-item-list::before {
+  position: absolute;
+  top: 24px;
+  bottom: 24px;
+  left: 20px;
+  width: 1.5px;
+  background: #b7d0de;
+  content: "";
+}
+
+.activity-item {
+  position: relative;
+  display: grid;
+  grid-template-columns: 42px 1fr;
+  align-items: center;
+  gap: 16px;
+}
+
+.activity-icon {
+  position: relative;
+  z-index: 1;
+  display: grid;
+  place-items: center;
+  width: 42px;
+  height: 42px;
+  border: 1.5px solid #b7d0de;
+  border-radius: 999px;
+  background: #e9f3f8;
+  color: #176b91;
+}
+
+.activity-icon svg {
+  fill: currentColor;
+}
+
+.activity-card {
+  display: grid;
+  gap: 8px;
+  border-radius: 6px;
+  background: #f4f4f4;
+  padding: 14px 16px;
+}
+
+.activity-section.suggested .activity-card {
+  border: 2px dashed #c7c7c7;
+  background: #ffffff;
+}
+
+.activity-card strong {
+  color: #050505;
+  font-size: 19px;
+  line-height: 1.2;
+}
+
+.activity-card p {
+  display: flex;
+  align-items: baseline;
+  gap: 9px;
+  margin: 0;
+  color: #6f6f6f;
+  font-size: 15px;
+}
+
+.activity-card span {
+  font-weight: 800;
+}
+
+.activity-card em {
+  font-style: italic;
+}
+
+.activity-empty-state {
+  display: grid;
+  justify-items: center;
+  gap: 12px;
+  margin-top: 120px;
+  border: 2px dashed #c7d6de;
+  border-radius: 8px;
+  padding: 34px 24px;
+  text-align: center;
+}
+
+.activity-empty-state svg {
+  color: #176b91;
+  fill: currentColor;
+}
+
+.activity-empty-state h3,
+.activity-empty-state p {
+  margin: 0;
+}
+
+.activity-empty-state h3 {
+  font-size: 22px;
+}
+
+.activity-empty-state p {
+  color: #6b7280;
+  font-size: 15px;
+  line-height: 1.45;
 }
 
 .contact-list-content h2 {
