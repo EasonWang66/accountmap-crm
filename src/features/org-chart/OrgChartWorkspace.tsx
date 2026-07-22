@@ -13,17 +13,20 @@ import { useCallback, useEffect, useMemo, useRef, useState, type MouseEvent } fr
 import { chartEdges, chartNodes, contacts as seedContacts } from "../../data/seed";
 import type { ChartEdge, Contact } from "../../data/types";
 import { useOrgChartStore } from "../../stores/orgChartStore";
-import { AddCardNode, type AddCardGraphNode } from "./AddCardNode";
 import { PersonNode, type PersonGraphNode } from "./PersonNode";
 
 const nodeTypes = {
-  addCard: AddCardNode,
   person: PersonNode
 };
 
-type ChartFlowNode = PersonGraphNode | AddCardGraphNode;
+type ChartFlowNode = PersonGraphNode;
 type ConnectionSide = "top" | "right" | "bottom" | "left";
 type ConnectedSides = Record<ConnectionSide, boolean>;
+type NodePosition = PersonGraphNode["position"];
+
+const CARD_WIDTH = 124;
+const CARD_HEIGHT = 88;
+const CARD_GAP = 36;
 
 const emptyConnectedSides = (): ConnectedSides => ({
   bottom: false,
@@ -41,6 +44,54 @@ const getConnectionSide = (node: PersonGraphNode, connectedNode: PersonGraphNode
   }
 
   return yDistance > 0 ? "bottom" : "top";
+};
+
+const overlapsExistingNode = (position: NodePosition, existingPosition: NodePosition) => {
+  return (
+    position.x < existingPosition.x + CARD_WIDTH + CARD_GAP &&
+    position.x + CARD_WIDTH + CARD_GAP > existingPosition.x &&
+    position.y < existingPosition.y + CARD_HEIGHT + CARD_GAP &&
+    position.y + CARD_HEIGHT + CARD_GAP > existingPosition.y
+  );
+};
+
+const findOpenCardPosition = (currentNodes: PersonGraphNode[]) => {
+  const selectedNodes = currentNodes.filter((node) => node.selected);
+  const anchorNode = selectedNodes[0] ?? currentNodes[currentNodes.length - 1];
+  const anchorPosition = anchorNode?.position ?? { x: 520, y: 520 };
+  const offsets = [
+    { x: 170, y: 0 },
+    { x: 0, y: 145 },
+    { x: -170, y: 0 },
+    { x: 170, y: 145 },
+    { x: -170, y: 145 },
+    { x: 340, y: 0 },
+    { x: 0, y: 290 },
+    { x: -340, y: 0 },
+    { x: 340, y: 145 },
+    { x: -340, y: 145 }
+  ];
+
+  for (const offset of offsets) {
+    const candidate = {
+      x: anchorPosition.x + offset.x,
+      y: anchorPosition.y + offset.y
+    };
+
+    if (!currentNodes.some((node) => overlapsExistingNode(candidate, node.position))) {
+      return candidate;
+    }
+  }
+
+  const rightMostNode = currentNodes.reduce(
+    (rightMost, node) => (node.position.x > rightMost.position.x ? node : rightMost),
+    anchorNode
+  );
+
+  return {
+    x: (rightMostNode?.position.x ?? anchorPosition.x) + 170,
+    y: rightMostNode?.position.y ?? anchorPosition.y
+  };
 };
 
 export function OrgChartWorkspace() {
@@ -124,45 +175,16 @@ export function OrgChartWorkspace() {
     [selectPerson, setHoveredPerson, setNodes]
   );
 
-  const addContactUnderNode = useCallback(
-    (parentNodeId?: string) => {
+  const addContactToCanvas = useCallback(
+    () => {
       setNodes((currentNodes) => {
-        const parentNode = parentNodeId ? currentNodes.find((node) => node.id === parentNodeId) : undefined;
-
-        if (parentNodeId && !parentNode) {
-          return currentNodes;
-        }
-
         const nextIndex = nextContactIndexRef.current;
         nextContactIndexRef.current += 1;
         const newContact = createPlaceholderContact(nextIndex);
-        const siblingCount = parentNodeId
-          ? chartRelationshipEdges.filter((edge) => edge.sourceNodeId === parentNodeId).length
-          : currentNodes.length;
         const newNodeId = `node-${newContact.id}`;
-        const newPosition = parentNode
-          ? {
-              x: parentNode.position.x + (siblingCount - 0.5) * 170,
-              y: parentNode.position.y + 145
-            }
-          : {
-              x: 520 + siblingCount * 170,
-              y: 520
-            };
+        const newPosition = findOpenCardPosition(currentNodes);
 
         setContacts((currentContacts) => [...currentContacts, newContact]);
-
-        if (parentNodeId) {
-          setChartRelationshipEdges((currentEdges) => [
-            ...currentEdges,
-            {
-              id: `edge-${parentNodeId}-${newNodeId}`,
-              sourceNodeId: parentNodeId,
-              targetNodeId: newNodeId,
-              relationshipType: "reports-to"
-            }
-          ]);
-        }
 
         selectPerson(newContact.id);
         setHoveredPerson(newContact.id);
@@ -182,14 +204,7 @@ export function OrgChartWorkspace() {
         ];
       });
     },
-    [
-      chartRelationshipEdges,
-      createPlaceholderContact,
-      deleteContactNode,
-      selectPerson,
-      setHoveredPerson,
-      setNodes
-    ]
+    [createPlaceholderContact, deleteContactNode, selectPerson, setHoveredPerson, setNodes]
   );
 
   const connectContactNodes = useCallback<OnConnect>(
@@ -233,35 +248,6 @@ export function OrgChartWorkspace() {
     [editMode]
   ) as (event: MouseEvent, edge: Edge) => void;
 
-  const leafNodeIds = useMemo(() => {
-    const sourceNodeIds = new Set(chartRelationshipEdges.map((edge) => edge.sourceNodeId));
-
-    return new Set(nodes.filter((node) => !sourceNodeIds.has(node.id)).map((node) => node.id));
-  }, [chartRelationshipEdges, nodes]);
-
-  const addCardNodes = useMemo<AddCardGraphNode[]>(
-    () =>
-      editMode
-        ? nodes
-            .filter((node) => leafNodeIds.has(node.id))
-            .map((node) => ({
-              id: `add-${node.id}`,
-              type: "addCard",
-              draggable: false,
-              selectable: false,
-              position: {
-                x: node.position.x,
-                y: node.position.y + 142
-              },
-              data: {
-                onAddContact: addContactUnderNode,
-                parentNodeId: node.id
-              }
-            }))
-        : [],
-    [addContactUnderNode, editMode, leafNodeIds, nodes]
-  );
-
   const connectedSideMap = useMemo(() => {
     const nodeMap = new Map(nodes.map((node) => [node.id, node]));
     const sideMap = new Map(nodes.map((node) => [node.id, emptyConnectedSides()]));
@@ -294,8 +280,8 @@ export function OrgChartWorkspace() {
   );
 
   const flowNodes = useMemo<ChartFlowNode[]>(
-    () => (editMode ? [...personFlowNodes, ...addCardNodes] : personFlowNodes),
-    [addCardNodes, editMode, personFlowNodes]
+    () => personFlowNodes,
+    [personFlowNodes]
   );
 
   useEffect(() => {
@@ -333,21 +319,9 @@ export function OrgChartWorkspace() {
         style: { stroke: "#a8b3bd", strokeWidth: 1.6 }
       }));
 
-      const addEdges = addCardNodes.map((node) => ({
-        id: `edge-${node.data.parentNodeId}-${node.id}`,
-        source: node.data.parentNodeId,
-        target: node.id,
-        type: "smoothstep",
-        style: {
-          stroke: "#a8a8a8",
-          strokeDasharray: "3 5",
-          strokeWidth: 1.5
-        }
-      }));
-
-      return [...hierarchyEdges, ...addEdges];
+      return hierarchyEdges;
     },
-    [addCardNodes, chartRelationshipEdges, editMode]
+    [chartRelationshipEdges, editMode]
   );
 
   return (
@@ -363,7 +337,7 @@ export function OrgChartWorkspace() {
             {editMode ? "Save Changes" : "Edit"}
           </button>
           {editMode ? (
-            <button className="add-contact-button" onClick={() => addContactUnderNode()} type="button">
+            <button className="add-contact-button" onClick={() => addContactToCanvas()} type="button">
               <Plus size={15} aria-hidden="true" />
               Add Contact
             </button>
