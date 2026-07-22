@@ -871,6 +871,17 @@ button {
   background: #176b91;
   color: #ffffff;
   font-weight: 800;
+  transition: background-color 140ms ease, transform 140ms ease, box-shadow 140ms ease;
+}
+
+.drawer-action-stack button:hover {
+  background: #0d3b52;
+  box-shadow: 0 8px 18px rgb(13 59 82 / 18%);
+  transform: translateY(-1px);
+}
+
+.drawer-action-stack button:active {
+  transform: translateY(0);
 }
 
 .add-to-leads-button {
@@ -908,7 +919,7 @@ button {
   color: #0d3b52;
 }
 
-.account-manager-card img {
+.account-manager-card > img {
   width: 36px;
   height: 36px;
   border-radius: 999px;
@@ -936,8 +947,12 @@ button {
 .account-manager-card svg,
 .account-manager-card .profile-contact-icon {
   justify-self: end;
+  width: 22px;
+  height: 22px;
+  border-radius: 0;
   color: #0d3b52;
   fill: currentColor;
+  object-fit: contain;
 }
 
 .version-history-drawer {
