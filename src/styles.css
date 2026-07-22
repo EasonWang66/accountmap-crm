@@ -787,6 +787,11 @@ button {
   margin-top: clamp(24px, 6vh, 56px);
 }
 
+.person-drawer:not(.edit-drawer) .drawer-content > .add-to-leads-button,
+.person-drawer:not(.edit-drawer) .drawer-content > .account-manager-card {
+  margin-top: clamp(18px, 4.5vh, 42px);
+}
+
 .account-manager-card {
   display: grid;
   grid-template-columns: 36px 1fr 30px;
