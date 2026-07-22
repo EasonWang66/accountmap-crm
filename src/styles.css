@@ -530,15 +530,6 @@ button {
     0 4px 10px rgb(13 59 82 / 30%);
 }
 
-.edit-connection-handle.hidden {
-  width: 1px;
-  height: 1px;
-  min-width: 1px;
-  min-height: 1px;
-  opacity: 0;
-  pointer-events: none;
-}
-
 .edit-target-handle.top,
 .edit-connection-handle.top {
   top: -17px;

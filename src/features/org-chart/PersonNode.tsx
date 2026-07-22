@@ -1,4 +1,5 @@
-import { Handle, Position, type Node, type NodeProps } from "@xyflow/react";
+import { Handle, Position, useUpdateNodeInternals, type Node, type NodeProps } from "@xyflow/react";
+import { useEffect } from "react";
 import type { Contact } from "../../data/types";
 import { useOrgChartStore } from "../../stores/orgChartStore";
 
@@ -37,6 +38,7 @@ function LinkedinGlyph() {
 }
 
 export function PersonNode({ data, id }: NodeProps<PersonGraphNode>) {
+  const updateNodeInternals = useUpdateNodeInternals();
   const hoveredPersonId = useOrgChartStore((state) => state.hoveredPersonId);
   const selectedPersonId = useOrgChartStore((state) => state.selectedPersonId);
   const editMode = useOrgChartStore((state) => state.editMode);
@@ -51,91 +53,132 @@ export function PersonNode({ data, id }: NodeProps<PersonGraphNode>) {
     top: false
   };
 
+  useEffect(() => {
+    updateNodeInternals(String(id));
+  }, [
+    connectedSides.bottom,
+    connectedSides.left,
+    connectedSides.right,
+    connectedSides.top,
+    id,
+    showConnectionHandles,
+    updateNodeInternals
+  ]);
+
+  const selectCurrentPerson = () => selectPerson(data.contact.id);
+
   return (
-    <button
+    <div
       className={`person-node ${data.contact.cardVariant} ${data.matched ? "matched" : "dimmed"} ${isActive ? "active" : ""}`}
       onBlur={() => setHoveredPerson(undefined)}
-      onClick={() => selectPerson(data.contact.id)}
+      onClick={selectCurrentPerson}
       onFocus={() => setHoveredPerson(data.contact.id)}
+      onKeyDown={(event) => {
+        if (event.target !== event.currentTarget) {
+          return;
+        }
+
+        if (event.key === "Enter" || event.key === " ") {
+          event.preventDefault();
+          selectCurrentPerson();
+        }
+      }}
       onMouseEnter={() => setHoveredPerson(data.contact.id)}
       onMouseLeave={() => setHoveredPerson(undefined)}
-      type="button"
+      role="button"
+      tabIndex={0}
     >
-      <Handle className="node-handle" position={Position.Top} type="target" />
+      <Handle className="node-handle" isConnectable={false} position={Position.Top} type="target" />
       {editMode ? (
         <>
-          <Handle
-            className="edit-target-handle nodrag nopan top"
-            id="target-top"
-            isConnectable={editMode && !connectedSides.top}
-            position={Position.Top}
-            type="target"
-          />
-          <Handle
-            className="edit-target-handle nodrag nopan right"
-            id="target-right"
-            isConnectable={editMode && !connectedSides.right}
-            position={Position.Right}
-            type="target"
-          />
-          <Handle
-            className="edit-target-handle nodrag nopan bottom"
-            id="target-bottom"
-            isConnectable={editMode && !connectedSides.bottom}
-            position={Position.Bottom}
-            type="target"
-          />
-          <Handle
-            className="edit-target-handle nodrag nopan left"
-            id="target-left"
-            isConnectable={editMode && !connectedSides.left}
-            position={Position.Left}
-            type="target"
-          />
-          <Handle
-            className={
-              showConnectionHandles && !connectedSides.top
-                ? "edit-connection-handle nodrag nopan top"
-                : "edit-connection-handle nodrag nopan hidden"
-            }
-            id="edit-top"
-            isConnectable={showConnectionHandles && !connectedSides.top}
-            position={Position.Top}
-            type="source"
-          />
-          <Handle
-            className={
-              showConnectionHandles && !connectedSides.right
-                ? "edit-connection-handle nodrag nopan right"
-                : "edit-connection-handle nodrag nopan hidden"
-            }
-            id="edit-right"
-            isConnectable={showConnectionHandles && !connectedSides.right}
-            position={Position.Right}
-            type="source"
-          />
-          <Handle
-            className={
-              showConnectionHandles && !connectedSides.bottom
-                ? "edit-connection-handle nodrag nopan bottom"
-                : "edit-connection-handle nodrag nopan hidden"
-            }
-            id="edit-bottom"
-            isConnectable={showConnectionHandles && !connectedSides.bottom}
-            position={Position.Bottom}
-            type="source"
-          />
-          <Handle
-            className={
-              showConnectionHandles && !connectedSides.left
-                ? "edit-connection-handle nodrag nopan left"
-                : "edit-connection-handle nodrag nopan hidden"
-            }
-            id="edit-left"
-            isConnectable={showConnectionHandles && !connectedSides.left}
-            position={Position.Left}
-            type="source"
-          />
+          {!connectedSides.top ? (
+            <Handle
+              className="edit-target-handle nodrag nopan top"
+              id="target-top"
+              isConnectable
+              isConnectableEnd
+              isConnectableStart={false}
+              position={Position.Top}
+              type="target"
+            />
+          ) : null}
+          {!connectedSides.right ? (
+            <Handle
+              className="edit-target-handle nodrag nopan right"
+              id="target-right"
+              isConnectable
+              isConnectableEnd
+              isConnectableStart={false}
+              position={Position.Right}
+              type="target"
+            />
+          ) : null}
+          {!connectedSides.bottom ? (
+            <Handle
+              className="edit-target-handle nodrag nopan bottom"
+              id="target-bottom"
+              isConnectable
+              isConnectableEnd
+              isConnectableStart={false}
+              position={Position.Bottom}
+              type="target"
+            />
+          ) : null}
+          {!connectedSides.left ? (
+            <Handle
+              className="edit-target-handle nodrag nopan left"
+              id="target-left"
+              isConnectable
+              isConnectableEnd
+              isConnectableStart={false}
+              position={Position.Left}
+              type="target"
+            />
+          ) : null}
+          {showConnectionHandles && !connectedSides.top ? (
+            <Handle
+              className="edit-connection-handle nodrag nopan top"
+              id="edit-top"
+              isConnectable
+              isConnectableEnd={false}
+              isConnectableStart
+              position={Position.Top}
+              type="source"
+            />
+          ) : null}
+          {showConnectionHandles && !connectedSides.right ? (
+            <Handle
+              className="edit-connection-handle nodrag nopan right"
+              id="edit-right"
+              isConnectable
+              isConnectableEnd={false}
+              isConnectableStart
+              position={Position.Right}
+              type="source"
+            />
+          ) : null}
+          {showConnectionHandles && !connectedSides.bottom ? (
+            <Handle
+              className="edit-connection-handle nodrag nopan bottom"
+              id="edit-bottom"
+              isConnectable
+              isConnectableEnd={false}
+              isConnectableStart
+              position={Position.Bottom}
+              type="source"
+            />
+          ) : null}
+          {showConnectionHandles && !connectedSides.left ? (
+            <Handle
+              className="edit-connection-handle nodrag nopan left"
+              id="edit-left"
+              isConnectable
+              isConnectableEnd={false}
+              isConnectableStart
+              position={Position.Left}
+              type="source"
+            />
+          ) : null}
         </>
       ) : null}
       {editMode ? (
@@ -177,7 +220,7 @@ export function PersonNode({ data, id }: NodeProps<PersonGraphNode>) {
         <MailGlyph />
         <LinkedinGlyph />
       </div>
-      <Handle className="node-handle" position={Position.Bottom} type="source" />
-    </button>
+      <Handle className="node-handle" isConnectable={false} position={Position.Bottom} type="source" />
+    </div>
   );
 }
